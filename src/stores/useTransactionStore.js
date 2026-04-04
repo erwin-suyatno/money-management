@@ -16,7 +16,20 @@ export const useTransactionStore = defineStore('transaction', {
 
       const { data, error } = await supabase
         .from('transactions')
-        .select('*, wallets(name)')
+        .select(`
+          *,
+          wallets(name),
+          categories (
+            id,
+            name,
+            icon,
+            color,
+            category_types (
+              code,
+              name
+            )
+          )
+        `)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -27,7 +40,7 @@ export const useTransactionStore = defineStore('transaction', {
       this.loading = false
     },
 
-    async addTransaction(wallet_id, type, amount, description, createdAt = null) {
+    async addTransaction(wallet_id, type, amount, description, createdAt = null, category_id = null) {
       this.loading = true
       this.error = null
 
@@ -39,19 +52,29 @@ export const useTransactionStore = defineStore('transaction', {
         type,
         amount,
         description,
+        category_id,
         created_by: authStore.user.id
       }
 
       // If a custom date is provided, use it for created_at
       if (createdAt) {
-        console.log('Custom date:', createdAt)
         insertData.created_at = createdAt
       }
 
       const { data, error } = await supabase
         .from('transactions')
         .insert([insertData])
-        .select('*, wallets(name)')
+        .select(`
+          *,
+          wallets(name),
+          categories (
+            id, 
+            name, 
+            icon, 
+            color,
+            category_types (code, name)
+          )
+        `)
         .maybeSingle()
 
       if (error) {
@@ -82,7 +105,17 @@ export const useTransactionStore = defineStore('transaction', {
         .from('transactions')
         .update(updates)
         .eq('id', id)
-        .select('*, wallets(name)')
+        .select(`
+          *,
+          wallets(name),
+          categories (
+            id, 
+            name, 
+            icon, 
+            color,
+            category_types (code, name)
+          )
+        `)
         .maybeSingle()
 
       if (error) {

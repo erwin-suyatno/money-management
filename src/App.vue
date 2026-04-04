@@ -6,11 +6,14 @@
         <div class="flex justify-between h-24">
           <div class="flex items-center space-x-12">
             <div class="flex-shrink-0 flex items-center font-black text-3xl tracking-tighter text-indigo-600 dark:text-indigo-400">
-              Money<span class="text-slate-900 dark:text-white">Cap</span>
+              
+              <router-link to="/dashboard">
+                Money<span class="text-slate-900 dark:text-white">Cap</span>
+              </router-link>
             </div>
             <nav class="flex space-x-4">
-              <router-link to="/dashboard" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Dashboard</router-link>
               <router-link to="/wallet" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Wallets</router-link>
+              <router-link to="/category" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Categories</router-link>
               <router-link to="/transaction" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">History</router-link>
               <router-link to="/transfer" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Transfer</router-link>
               <router-link to="/import" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Import</router-link>
@@ -43,6 +46,9 @@
       </router-link>
       <router-link to="/wallet" class="flex flex-col items-center p-3 rounded-2xl transition-all" active-class="text-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 dark:text-indigo-400">
         <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+      </router-link>
+      <router-link to="/category" class="flex flex-col items-center p-3 rounded-2xl transition-all" active-class="text-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 dark:text-indigo-400">
+        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
       </router-link>
       <router-link to="/transfer" class="flex flex-col items-center p-3 rounded-2xl transition-all" active-class="text-indigo-600 bg-indigo-50 dark:bg-indigo-900/40 dark:text-indigo-400">
         <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>

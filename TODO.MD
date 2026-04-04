@@ -76,10 +76,14 @@
 - [ ] UI: Dashboard "Budget Progress" widget with visual alerts for overspending.
 
 ## Phase 13: Categorization & Defaults
-- [ ] Database: Create `categories` table with icon/color metadata.
-- [ ] App Init: Seed default categories (Food, Transport, Shopping, Bills, etc.).
-- [ ] UI: Category management (Create, Edit, Delete custom categories).
-- [ ] Integration: Link transactions and budgets to categories.
+- [x] Database: Schema for `category_types` (Global Master) and `categories` (Hierarchical).
+- [x] App Init: Seed 4 Standard Types (INCOME, EXPENSE, SAVING, INVESTMENT).
+- [x] App Init: Seed default Global Categories (Gaji, Makan, Transport, Crypto, etc.).
+- [x] Store: Implement `useCategoryStore` to fetch types and categories.
+- [x] UI: Add Category Picker inside Transaction Entry (Income/Expense).
+- [x] UI: Category Management (Create, Edit, Delete categories & sub-categories).
+- [x] Logic: Update Transaction and Budget logic to link via category_id.
+
 
 ## Phase 14: Data Correction (Edit & Delete)
 - [x] UI: Add Edit/Delete actions to Transaction and Transfer list items.

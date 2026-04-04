@@ -36,25 +36,40 @@
 
         <!-- Type Toggle -->
         <div class="flex p-1.5 bg-slate-100 dark:bg-gray-900 rounded-[2rem] shadow-inner">
-          <button type="button" @click="txType = 'EXPENSE'" 
-                  :class="txType === 'EXPENSE' ? 'bg-white dark:bg-gray-800 text-rose-600 shadow-xl scale-[1.02]' : 'text-slate-400'" 
-                  class="flex-1 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all">
-            Expense
-          </button>
-          <button type="button" @click="txType = 'INCOME'" 
-                  :class="txType === 'INCOME' ? 'bg-white dark:bg-gray-800 text-emerald-600 shadow-xl scale-[1.02]' : 'text-slate-400'" 
-                  class="flex-1 py-4 rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest transition-all">
-            Income
+          <button v-for="type in categoryStore.types" :key="type.code"
+                  type="button" @click="txType = type.code" 
+                  :class="txType === type.code ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'" 
+                  class="flex-1 py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
+            {{ type.name }}
           </button>
         </div>
 
         <div class="grid grid-cols-1 gap-6">
+          <!-- Category Selection -->
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Category</label>
+            <div class="grid grid-cols-4 gap-3">
+              <button v-for="cat in filteredCategories" :key="cat.id"
+                      type="button"
+                      @click="selectedCategory = cat.id"
+                      :class="selectedCategory === cat.id ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' : 'bg-slate-50 dark:bg-gray-900'"
+                      class="p-4 rounded-3xl transition-all flex flex-col items-center justify-center space-y-2 group">
+                 <div :style="{ backgroundColor: selectedCategory === cat.id ? cat.color : '#94a3b8' }" 
+                      class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm transition-transform group-active:scale-90">
+                    <component :is="cat.icon || 'tag'" class="w-5 h-5" />
+                 </div>
+                 <span class="text-[9px] font-black uppercase tracking-tighter truncate w-full text-center">{{ cat.name }}</span>
+              </button>
+            </div>
+            <p v-if="filteredCategories.length === 0" class="text-center py-4 text-[10px] font-bold text-slate-400 italic">No categories for this type</p>
+          </div>
+
           <!-- Wallet Selection -->
           <div>
             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Source Wallet</label>
             <select v-model="selectedWallet" required 
                     class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all appearance-none cursor-pointer">
-              <option v-for="w in walletStore.wallets" :key="w.id" :value="w.id">{{ w.name }}</option>
+              <option v-for="w in walletStore.wallets" :key="w.id" :value="w.id">{{ w.name }} (Rp {{ w.balance.toLocaleString('id-ID') }})</option>
             </select>
           </div>
 
@@ -97,9 +112,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useWalletStore } from '../stores/useWalletStore'
 import { useTransactionStore } from '../stores/useTransactionStore'
+import { useCategoryStore } from '../stores/useCategoryStore'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -117,13 +133,19 @@ const emit = defineEmits(['close', 'success'])
 
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
+const categoryStore = useCategoryStore()
 
 const txType = ref('EXPENSE')
 const selectedWallet = ref('')
+const selectedCategory = ref(null)
 const amount = ref(null)
 const description = ref('')
 
 const isEdit = computed(() => !!props.initialData)
+
+const filteredCategories = computed(() => {
+  return categoryStore.categories.filter(c => c.category_types?.code === txType.value)
+})
 
 const formattedDate = computed(() => {
   return props.date.toLocaleDateString('id-ID', { 
@@ -134,22 +156,41 @@ const formattedDate = computed(() => {
   })
 })
 
+// Reset category when type changes
+watch(txType, (newType) => {
+  const cats = categoryStore.categories.filter(c => c.category_types?.code === newType)
+  if (cats.length > 0) {
+    selectedCategory.value = cats[0].id
+  } else {
+    selectedCategory.value = null
+  }
+})
+
 // Initialize form
-watch(() => props.isOpen, (newVal) => {
+watch(() => props.isOpen, async (newVal) => {
   if (newVal) {
+    if (categoryStore.categories.length === 0) {
+      await categoryStore.fetchInitialData()
+    }
+
     if (isEdit.value) {
-      txType.value = props.initialData.type
+      txType.value = props.initialData.category_types?.code || props.initialData.type || 'EXPENSE'
       selectedWallet.value = props.initialData.wallet_id
+      selectedCategory.value = props.initialData.category_id
       amount.value = props.initialData.amount
       description.value = props.initialData.description || ''
     } else {
       if (walletStore.wallets.length > 0 && !selectedWallet.value) {
         selectedWallet.value = walletStore.wallets[0].id
       }
-      // Reset form
+      
+      // Default to Expense
+      txType.value = 'EXPENSE'
+      const expenseCats = categoryStore.expenseCategories
+      if (expenseCats.length > 0) selectedCategory.value = expenseCats[0].id
+      
       amount.value = null
       description.value = ''
-      txType.value = 'EXPENSE'
     }
   }
 })
@@ -165,6 +206,7 @@ const handleSubmit = async () => {
     const success = await transactionStore.updateTransaction(props.initialData.id, {
       wallet_id: selectedWallet.value,
       type: txType.value,
+      category_id: selectedCategory.value,
       amount: amount.value,
       description: description.value
     })
@@ -183,7 +225,8 @@ const handleSubmit = async () => {
       txType.value,
       amount.value,
       description.value,
-      txDate.toISOString()
+      txDate.toISOString(),
+      selectedCategory.value
     )
 
     if (success) {
@@ -192,6 +235,12 @@ const handleSubmit = async () => {
     }
   }
 }
+async function loadCats() {
+  if (categoryStore.categories.length === 0) {
+    await categoryStore.fetchInitialData()
+  }
+}
+onMounted(loadCats)
 
 const handleDelete = async () => {
   if (!confirm('Are you sure you want to delete this transaction? This action cannot be undone and will affect your wallet balance.')) return

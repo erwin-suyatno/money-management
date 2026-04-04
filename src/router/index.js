@@ -8,6 +8,7 @@ const routes = [
   { path: '/wallet', component: () => import('../views/Wallet.vue'), name: 'Wallet' },
   { path: '/transaction', component: () => import('../views/Transaction.vue'), name: 'Transaction' },
   { path: '/transfer', component: () => import('../views/Transfer.vue'), name: 'Transfer' },
+  { path: '/category', component: () => import('../views/Category.vue'), name: 'Category' },
   { path: '/import', component: () => import('../views/ImportOCR.vue'), name: 'Import' },
 ]
 

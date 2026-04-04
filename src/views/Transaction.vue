@@ -26,7 +26,13 @@
              </div>
            </div>
 
-           <form @submit.prevent="submitTransaction" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+           <form @submit.prevent="submitTransaction" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div class="md:col-span-1">
+                 <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Category</label>
+                 <select v-model="selectedCategory" required class="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 dark:text-white font-bold transition-all appearance-none">
+                    <option v-for="cat in filteredQuickCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                 </select>
+              </div>
               <div class="md:col-span-1">
                  <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Source Wallet</label>
                  <select v-model="selectedWallet" required class="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 dark:text-white font-bold transition-all">
@@ -44,7 +50,7 @@
                  <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Note</label>
                  <input v-model="description" type="text" placeholder="What's this for?" class="w-full bg-gray-50 dark:bg-gray-900 border-none rounded-2xl px-5 py-4 focus:ring-4 focus:ring-blue-500/10 dark:text-white font-bold transition-all">
               </div>
-              <div class="md:col-span-3">
+              <div class="md:col-span-4">
                  <button type="submit" :disabled="transactionStore.loading || walletStore.wallets.length === 0" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-black shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition active:scale-[0.98] disabled:opacity-50">
                     {{ transactionStore.loading ? 'Saving Entry...' : 'Post Transaction' }}
                  </button>
@@ -123,16 +129,30 @@
                         <span class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-tighter">{{ new Date(tx.created_at).toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: '2-digit'}) }}</span>
                      </td>
                      <td class="p-6 py-5">
-                        <p class="text-sm font-bold text-slate-600 dark:text-gray-300 truncate max-w-xs">{{ tx.description || 'General Transaction' }}</p>
+                        <div class="flex items-center space-x-3">
+                           <div v-if="tx.categories" :style="{ backgroundColor: tx.categories.color + '20', color: tx.categories.color }" 
+                                class="w-10 h-10 rounded-xl flex items-center justify-center shadow-sm">
+                              <component :is="tx.categories.icon || 'tag'" class="w-5 h-5" />
+                           </div>
+                           <div v-else class="w-10 h-10 bg-slate-100 dark:bg-gray-800 rounded-xl flex items-center justify-center text-slate-400">
+                              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                           </div>
+                           <div>
+                              <p class="text-sm font-bold text-slate-600 dark:text-gray-300 truncate max-w-xs">{{ tx.description || tx.categories?.name || 'General' }}</p>
+                              <p v-if="tx.categories" class="text-[9px] font-black uppercase tracking-widest opacity-50">{{ tx.categories.name }}</p>
+                           </div>
+                        </div>
                      </td>
                      <td class="p-6 py-5">
                         <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-lg text-[9px] font-black uppercase tracking-widest text-slate-500">{{ tx.wallets?.name }}</span>
                      </td>
                      <td class="p-6 py-5">
-                        <span :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-rose-500'" class="text-[9px] font-black uppercase tracking-widest">{{ tx.type }}</span>
+                        <span :class="tx.categories?.category_types?.code === 'INCOME' || tx.type === 'INCOME' ? 'text-emerald-500' : 'text-rose-500'" class="text-[9px] font-black uppercase tracking-widest">
+                           {{ tx.categories?.category_types?.name || tx.type }}
+                        </span>
                      </td>
-                     <td class="p-6 py-5 text-right font-black tabular-nums tracking-tighter" :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'">
-                        {{ tx.type === 'INCOME' ? '+' : '-' }}{{ tx.amount.toLocaleString('id-ID') }}
+                     <td class="p-6 py-5 text-right font-black tabular-nums tracking-tighter" :class="tx.categories?.category_types?.code === 'INCOME' || tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'">
+                        {{ (tx.categories?.category_types?.code === 'INCOME' || tx.type === 'INCOME') ? '+' : '-' }}{{ tx.amount.toLocaleString('id-ID') }}
                      </td>
                      <td class="p-6 py-5 text-right flex items-center justify-end space-x-2">
                         <button @click="openEdit(tx)" class="p-2 hover:bg-white dark:hover:bg-gray-800 rounded-xl text-slate-400 hover:text-indigo-600 transition-all" title="Edit">
@@ -211,17 +231,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useWalletStore } from '../stores/useWalletStore'
 import { useTransactionStore } from '../stores/useTransactionStore'
+import { useCategoryStore } from '../stores/useCategoryStore'
 import CalendarDayModal from '../components/CalendarDayModal.vue'
 import TransactionFormModal from '../components/TransactionFormModal.vue'
 
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
+const categoryStore = useCategoryStore()
 
 const txType = ref('EXPENSE')
 const selectedWallet = ref('')
+const selectedCategory = ref(null)
 const amount = ref(null)
 const description = ref('')
 
@@ -235,10 +258,31 @@ const itemsPerPage = ref(10)
 const currentMonth = ref(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
 
 onMounted(async () => {
-  await walletStore.fetchWallets()
-  await transactionStore.fetchTransactions()
+  await Promise.all([
+    walletStore.fetchWallets(),
+    transactionStore.fetchTransactions(),
+    categoryStore.fetchInitialData()
+  ])
+  
   if (walletStore.wallets.length > 0 && !selectedWallet.value) {
     selectedWallet.value = walletStore.wallets[0].id
+  }
+
+  // Set default category for Quick Entry
+  if (!selectedCategory.value) {
+    const defaultCat = categoryStore.expenseCategories[0]
+    if (defaultCat) selectedCategory.value = defaultCat.id
+  }
+})
+
+const filteredQuickCategories = computed(() => {
+  return categoryStore.categories.filter(c => c.category_types?.code === txType.value)
+})
+
+watch(txType, (newType) => {
+  const cats = categoryStore.categories.filter(c => c.category_types?.code === newType)
+  if (cats.length > 0) {
+    selectedCategory.value = cats[0].id
   }
 })
 
@@ -380,7 +424,9 @@ const submitTransaction = async () => {
     selectedWallet.value,
     txType.value,
     amount.value,
-    description.value
+    description.value,
+    null,
+    selectedCategory.value
   )
   if (success) {
     amount.value = null
