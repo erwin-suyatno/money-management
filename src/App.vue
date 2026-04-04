@@ -32,8 +32,22 @@
     </header>
 
     <!-- Main Content -->
-    <main v-if="!authStore.loading" class="w-full min-h-screen">
+    <main v-if="!authStore.loading" class="w-full min-h-screen relative">
       <router-view />
+      
+      <!-- Premium Footer -->
+      <footer v-if="authStore.session" class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-12 border-t border-slate-100 dark:border-gray-800/50 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center space-x-3">
+          <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400">v1.0.0</span>
+          <p class="text-[11px] font-bold text-slate-400">All systems operational.</p>
+        </div>
+        <div class="flex items-center space-x-1 text-[11px] font-bold text-slate-400">
+          <span>Created by</span>
+          <a href="https://www.instagram.com/erwin.suyatno/" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline">Erwin Suyatno</a>
+          <span class="mx-1">&bull;</span>
+          <span>&copy; 2026 MoneyCap</span>
+        </div>
+      </footer>
     </main>
     <div v-else class="flex justify-center items-center h-screen">
       <div class="w-16 h-16 border-4 border-slate-100 border-t-indigo-600 rounded-full animate-spin"></div>
