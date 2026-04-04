@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  /* Premium Colors */
+  --color-slate-750: #1e293b;
+  --color-gray-750: #1f2937;
+  
+  /* Glassmorphism Shadows */
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  --shadow-premium: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+  
+  /* Gradients */
+  --background-image-gradient-card-blue: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  --background-image-gradient-card-green: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --background-image-gradient-card-rose: linear-gradient(135deg, #e11d48 0%, #fb7185 100%);
+  --background-image-gradient-card-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  --background-image-gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50/50 dark:bg-gray-950 text-slate-900 dark:text-gray-100;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply backdrop-blur-md bg-white/70 dark:bg-gray-800/70 border border-white/20 dark:border-gray-700/30 shadow-glass;
+  }
+  
+  .premium-card {
+    @apply bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-750 shadow-premium rounded-[2.5rem];
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 dark:bg-gray-700 rounded-full;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-300 dark:bg-gray-600;
+  }
+}
