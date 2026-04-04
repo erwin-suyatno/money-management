@@ -8,8 +8,8 @@
       <!-- Header -->
       <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
         <div>
-          <h3 class="text-xl font-black dark:text-white tracking-tight">{{ isEdit ? 'Edit Transaction' : 'Post Transaction' }}</h3>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ isEdit ? 'Update Details' : 'Contextual Recording' }}</p>
+          <h3 class="text-xl font-black dark:text-white tracking-tight">{{ isEdit ? $t('transactions.edit_title') : $t('transactions.post_title') }}</h3>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ isEdit ? $t('transactions.update_subtitle') : $t('transactions.post_subtitle') }}</p>
         </div>
         <button @click="close" class="p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
           <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,18 +20,17 @@
 
       <!-- Form Body -->
       <form @submit.prevent="handleSubmit" class="p-8 space-y-6">
-        <!-- Date Display (Read-only or editable) -->
+        <!-- Date Display -->
         <div class="flex items-center justify-between bg-slate-50 dark:bg-gray-900/50 p-4 rounded-2xl border border-slate-100 dark:border-gray-800">
            <div class="flex items-center space-x-3">
               <div class="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               </div>
               <div>
-                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Transaction Date</p>
+                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('transactions.form_date') }}</p>
                  <p class="text-sm font-black text-slate-900 dark:text-white capitalize">{{ formattedDate }}</p>
               </div>
            </div>
-           <!-- Optional: Add a button to change date if needed -->
         </div>
 
         <!-- Type Toggle -->
@@ -40,14 +39,14 @@
                   type="button" @click="txType = type.code" 
                   :class="txType === type.code ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'" 
                   class="flex-1 py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
-            {{ type.name }}
+            {{ type.name === 'Income' ? $t('transactions.income') : $t('transactions.expense') }}
           </button>
         </div>
 
         <div class="grid grid-cols-1 gap-6">
           <!-- Category Selection -->
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Category</label>
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_category') }}</label>
             <div class="grid grid-cols-4 gap-3">
               <button v-for="cat in filteredCategories" :key="cat.id"
                       type="button"
@@ -61,21 +60,21 @@
                  <span class="text-[9px] font-black uppercase tracking-tighter truncate w-full text-center">{{ cat.name }}</span>
               </button>
             </div>
-            <p v-if="filteredCategories.length === 0" class="text-center py-4 text-[10px] font-bold text-slate-400 italic">No categories for this type</p>
+            <p v-if="filteredCategories.length === 0" class="text-center py-4 text-[10px] font-bold text-slate-400 italic">{{ $t('transactions.empty_categories') }}</p>
           </div>
 
           <!-- Wallet Selection -->
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Source Wallet</label>
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_wallet') }}</label>
             <select v-model="selectedWallet" required 
                     class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all appearance-none cursor-pointer">
-              <option v-for="w in walletStore.wallets" :key="w.id" :value="w.id">{{ w.name }} (Rp {{ w.balance.toLocaleString('id-ID') }})</option>
+              <option v-for="w in walletStore.wallets" :key="w.id" :value="w.id">{{ w.name }} (Rp {{ w.balance.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }})</option>
             </select>
           </div>
 
           <!-- Amount -->
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Amount (IDR)</label>
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_amount') }}</label>
             <div class="relative group">
               <span class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 font-black group-focus-within:text-blue-500 transition-colors">Rp</span>
               <input v-model.number="amount" type="number" required min="1" placeholder="0" 
@@ -85,8 +84,8 @@
 
           <!-- Description -->
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">Note (Optional)</label>
-            <input v-model="description" type="text" placeholder="What was this for?" 
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_note') }}</label>
+            <input v-model="description" type="text" :placeholder="$t('transactions.form_note_placeholder')" 
                    class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all">
           </div>
         </div>
@@ -97,13 +96,13 @@
                   :disabled="transactionStore.loading || walletStore.wallets.length === 0" 
                   class="w-full py-6 bg-blue-600 text-white rounded-[2.5rem] text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/40 hover:bg-blue-700 transition active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-3">
              <span v-if="transactionStore.loading" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-             <span>{{ transactionStore.loading ? 'Saving...' : (isEdit ? 'Update Transaction' : 'Commit Transaction') }}</span>
+             <span>{{ transactionStore.loading ? $t('transactions.saving') : (isEdit ? $t('transactions.update_btn') : $t('transactions.commit_btn')) }}</span>
           </button>
 
           <button v-if="isEdit" type="button" @click="handleDelete" 
                   :disabled="transactionStore.loading"
                   class="w-full py-4 bg-rose-50 dark:bg-rose-900/10 text-rose-600 rounded-[2rem] text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition disabled:opacity-50">
-            Delete Transaction
+            {{ $t('transactions.delete_btn') }}
           </button>
         </div>
       </form>
@@ -116,6 +115,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useWalletStore } from '../stores/useWalletStore'
 import { useTransactionStore } from '../stores/useTransactionStore'
 import { useCategoryStore } from '../stores/useCategoryStore'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -131,6 +131,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'success'])
 
+const { t, locale } = useI18n()
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
@@ -148,7 +149,7 @@ const filteredCategories = computed(() => {
 })
 
 const formattedDate = computed(() => {
-  return props.date.toLocaleDateString('id-ID', { 
+  return props.date.toLocaleDateString(locale.value === 'id' ? 'id-ID' : 'en-US', { 
     weekday: 'long',
     day: 'numeric', 
     month: 'long', 
@@ -243,7 +244,7 @@ async function loadCats() {
 onMounted(loadCats)
 
 const handleDelete = async () => {
-  if (!confirm('Are you sure you want to delete this transaction? This action cannot be undone and will affect your wallet balance.')) return
+  if (!confirm(t('transactions.delete_warning'))) return
   
   const success = await transactionStore.deleteTransaction(props.initialData.id)
   if (success) {

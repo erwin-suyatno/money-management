@@ -12,19 +12,28 @@
               </router-link>
             </div>
             <nav class="flex space-x-4">
-              <router-link to="/wallet" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Wallets</router-link>
-              <router-link to="/category" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Categories</router-link>
-              <router-link to="/transaction" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">History</router-link>
-              <router-link to="/transfer" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Transfer</router-link>
-              <router-link to="/import" class="px-5 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-50 dark:hover:bg-gray-800" active-class="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/40 dark:text-indigo-400 border border-indigo-100/50 dark:border-indigo-900/50">Import</router-link>
+              <router-link to="/wallet" class="nav-link" active-class="nav-link-active">{{ $t('nav.wallets') }}</router-link>
+              <router-link to="/category" class="nav-link" active-class="nav-link-active">{{ $t('nav.categories') }}</router-link>
+              <router-link to="/transaction" class="nav-link" active-class="nav-link-active">{{ $t('nav.history') }}</router-link>
+              <router-link to="/transfer" class="nav-link" active-class="nav-link-active">{{ $t('nav.transfer') }}</router-link>
+              <router-link to="/import" class="nav-link" active-class="nav-link-active">{{ $t('nav.import') }}</router-link>
             </nav>
           </div>
-          <div class="flex items-center space-x-6">
-             <div class="h-10 w-10 rounded-2xl bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-750 flex items-center justify-center text-slate-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <div class="flex items-center space-x-4">
+             <!-- Language Switcher -->
+             <div class="flex bg-slate-50 dark:bg-gray-800 p-1.5 rounded-2xl border border-slate-100 dark:border-gray-750">
+                <button @click="changeLang('id')" :class="locale === 'id' ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600' : 'text-slate-400'" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all">ID</button>
+                <button @click="changeLang('en')" :class="locale === 'en' ? 'bg-white dark:bg-gray-700 shadow-sm text-indigo-600' : 'text-slate-400'" class="px-3 py-1.5 rounded-xl text-[10px] font-black transition-all">EN</button>
              </div>
+
+             <!-- Theme Toggle -->
+             <button @click="themeStore.toggleTheme" class="h-10 w-10 rounded-2x bg-slate-50 dark:bg-gray-800 border border-slate-100 dark:border-gray-750 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all">
+                <svg v-if="themeStore.isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707.707M12 5a7 7 0 100 14 7 7 0 000-14z"/></svg>
+                <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+             </button>
+
              <button @click="handleLogout" class="px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all border border-transparent hover:border-rose-100 dark:hover:border-rose-900/50">
-              Sign Out
+              {{ $t('nav.signout') }}
             </button>
           </div>
         </div>
@@ -38,11 +47,11 @@
       <!-- Premium Footer -->
       <footer v-if="authStore.session" class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-12 border-t border-slate-100 dark:border-gray-800/50 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center space-x-3">
-          <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400">v1.0.0</span>
-          <p class="text-[11px] font-bold text-slate-400">All systems operational.</p>
+          <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400">v1.1.0</span>
+          <p class="text-[11px] font-bold text-slate-400">{{ $t('common.all_systems') }}</p>
         </div>
         <div class="flex items-center space-x-1 text-[11px] font-bold text-slate-400">
-          <span>Created by</span>
+          <span>{{ $t('common.created_by') }}</span>
           <a href="https://www.instagram.com/erwin.suyatno/" target="_blank" class="text-indigo-600 dark:text-indigo-400 hover:underline">Erwin Suyatno</a>
           <span class="mx-1">&bull;</span>
           <span>&copy; 2026 MoneyCap</span>
@@ -76,7 +85,7 @@
 
       <button @click="handleLogout" class="flex flex-col items-center p-2 text-gray-500 hover:text-red-500 transition">
         <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-        <span class="text-[10px] font-medium leading-none">Keluar</span>
+        <span class="text-[10px] font-black uppercase tracking-tighter leading-none">{{ $t('nav.signout') }}</span>
       </button>
     </nav>
   </div>
@@ -85,14 +94,24 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from './stores/useAuthStore'
+import { useThemeStore } from './stores/useThemeStore'
 
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 const router = useRouter()
+const { locale } = useI18n()
 
 onMounted(async () => {
   await authStore.initialize()
+  themeStore.applyTheme()
 })
+
+const changeLang = (lang) => {
+  locale.value = lang
+  localStorage.setItem('lang', lang)
+}
 
 const handleLogout = async () => {
   await authStore.logout()

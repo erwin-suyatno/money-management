@@ -1,7 +1,7 @@
 {
   "name": "money-management",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -15,6 +15,7 @@
     "pinia": "^3.0.4",
     "tesseract.js": "^7.0.0",
     "vue": "^3.5.30",
+    "vue-i18n": "^9.14.5",
     "vue-router": "^5.0.4",
     "vue3-apexcharts": "^1.11.1"
   },

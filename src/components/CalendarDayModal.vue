@@ -9,7 +9,7 @@
       <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
         <div>
           <h3 class="text-xl font-black dark:text-white tracking-tight">{{ formattedDate }}</h3>
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Transaction Activity</p>
+          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ $t('dashboard.calendar_modal_subtitle') }}</p>
         </div>
         <button @click="close" class="p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
           <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -25,7 +25,7 @@
              <div :class="tx.type === 'INCOME' ? 'bg-emerald-500' : 'bg-rose-500'" 
                   class="w-1.5 h-10 rounded-full shadow-lg transition-transform group-hover:scale-y-110"></div>
              <div>
-                <p class="text-sm font-black text-slate-900 dark:text-white tracking-tight">{{ tx.description || 'General Transaction' }}</p>
+                <p class="text-sm font-black text-slate-900 dark:text-white tracking-tight">{{ tx.description || $t('transactions.general') }}</p>
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 flex items-center">
                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-300 mr-2"></span>
                    {{ tx.wallets?.name }}
@@ -34,7 +34,7 @@
           </div>
           <div class="text-right">
              <p :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'" class="font-black tabular-nums tracking-tighter text-lg">
-                {{ tx.type === 'INCOME' ? '+' : '-' }}{{ tx.amount.toLocaleString('id-ID') }}
+                {{ tx.type === 'INCOME' ? '+' : '-' }}{{ tx.amount.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}
              </p>
           </div>
         </div>
@@ -43,18 +43,18 @@
            <div class="w-20 h-20 bg-slate-50 dark:bg-gray-800/30 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white dark:border-gray-800 shadow-sm">
               <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
            </div>
-           <p class="text-slate-400 font-black uppercase tracking-widest text-[10px]">No activity for this date</p>
+           <p class="text-slate-400 font-black uppercase tracking-widest text-[10px]">{{ $t('dashboard.calendar_empty') }}</p>
         </div>
       </div>
 
       <!-- Action Footer -->
       <div class="p-6 bg-slate-50/50 dark:bg-gray-900/50 flex items-center justify-between border-t border-slate-50 dark:border-gray-800 backdrop-blur-sm">
-        <button @click="close" class="px-8 py-3 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all shadow-sm">Dismiss</button>
+        <button @click="close" class="px-8 py-3 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all shadow-sm">{{ $t('dashboard.calendar_dismiss') }}</button>
         
         <button @click="handleQuickAdd" 
                 class="px-8 py-4 bg-indigo-600 text-white rounded-[2rem] text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 transition active:scale-[0.98] flex items-center space-x-3">
            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
-           <span>Quick Add</span>
+           <span>{{ $t('dashboard.calendar_quick_add') }}</span>
         </button>
       </div>
     </div>
@@ -63,6 +63,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -78,9 +79,11 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'quick-add', 'edit'])
 
+const { t, locale } = useI18n()
+
 const formattedDate = computed(() => {
   if (!props.date) return ''
-  return props.date.toLocaleDateString('id-ID', { 
+  return props.date.toLocaleDateString(locale.value === 'id' ? 'id-ID' : 'en-US', { 
     day: 'numeric', 
     month: 'long', 
     year: 'numeric' 
