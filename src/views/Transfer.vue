@@ -117,11 +117,13 @@
 import { ref, onMounted } from 'vue'
 import { supabase } from '../services/supabase'
 import { useWalletStore } from '../stores/useWalletStore'
+import { useAuthStore } from '../stores/useAuthStore'
 import { useI18n } from 'vue-i18n'
 import Skeleton from '../components/Skeleton.vue'
 
 const { t, locale } = useI18n()
 const walletStore = useWalletStore()
+const authStore = useAuthStore()
 const loading = ref(false)
 const transfers = ref([])
 const form = ref({
@@ -170,12 +172,15 @@ const handleSubmit = async () => {
 
   loading.value = true
   try {
-    const { error } = await supabase.rpc('execute_transfer', {
-      p_from_wallet_id: form.value.from_wallet_id,
-      p_to_wallet_id: form.value.to_wallet_id,
-      p_amount: form.value.amount,
-      p_note: form.value.note
-    })
+    const { error } = await supabase
+      .from('transfers')
+      .insert([{
+        from_wallet_id: form.value.from_wallet_id,
+        to_wallet_id: form.value.to_wallet_id,
+        amount: form.value.amount,
+        note: form.value.note || null,
+        created_by: authStore.user?.id
+      }])
 
     if (error) throw error
 
