@@ -99,7 +99,7 @@
                  <div class="h-10 w-px bg-slate-100 dark:bg-gray-800"></div>
                  <div>
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{{ formatDate(t.created_at) }}</p>
-                    <p v-if="t.note" class="text-xs font-bold text-slate-500 italic">{{ t.note }}</p>
+                    <p v-if="t.description" class="text-xs font-bold text-slate-500 italic">{{ t.description }}</p>
                  </div>
               </div>
               <div class="text-right">
@@ -178,7 +178,7 @@ const handleSubmit = async () => {
         from_wallet_id: form.value.from_wallet_id,
         to_wallet_id: form.value.to_wallet_id,
         amount: form.value.amount,
-        note: form.value.note || null,
+        description: form.value.note || null,
         created_by: authStore.user?.id
       }])
 
