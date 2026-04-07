@@ -1,12 +1,13 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-[110] flex items-center justify-center p-4">
+  <div v-if="isOpen" class="fixed inset-0 z-[110] flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="close"></div>
     
     <!-- Modal Content -->
-    <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-in fade-in zoom-in duration-300 overflow-hidden shadow-2xl border-t-8 border-blue-600">
+    <div class="premium-card !p-0 relative z-10 flex h-[100dvh] w-full max-h-[100dvh] flex-col overflow-hidden rounded-t-[2rem] border-t-8 border-blue-600 shadow-2xl animate-in fade-in zoom-in duration-300 sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:rounded-[2rem]">
       <!-- Header -->
-      <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
+      <div class="border-b border-slate-50 bg-white/90 p-5 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/80 sm:p-8">
+        <div class="flex items-center justify-between">
         <div>
           <h3 class="text-xl font-black dark:text-white tracking-tight">{{ isEdit ? $t('transactions.edit_title') : $t('transactions.post_title') }}</h3>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ isEdit ? $t('transactions.update_subtitle') : $t('transactions.post_subtitle') }}</p>
@@ -16,10 +17,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/>
           </svg>
         </button>
+        </div>
       </div>
 
       <!-- Form Body -->
-      <form @submit.prevent="handleSubmit" class="p-8 space-y-6">
+      <form @submit.prevent="handleSubmit" class="flex min-h-0 flex-1 flex-col">
+        <div class="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 sm:p-8">
         <!-- Date Display -->
         <div class="flex items-center justify-between bg-slate-50 dark:bg-gray-900/50 p-4 rounded-2xl border border-slate-100 dark:border-gray-800">
            <div class="flex items-center space-x-3">
@@ -65,7 +68,7 @@
                       class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm transition-transform group-active:scale-90">
                     <component :is="cat.icon || 'tag'" class="w-5 h-5" />
                  </div>
-                 <span class="text-[9px] font-black uppercase tracking-tighter truncate w-full text-center">{{ cat.name }}</span>
+                 <span class="w-full text-center text-xs font-bold leading-tight wrap-break-word dark:text-slate-200">{{ getCategoryDisplayName(cat) }}</span>
               </button>
             </div>
             <p v-if="filteredCategories.length === 0" class="text-center py-4 text-[10px] font-bold text-slate-400 italic">{{ $t('transactions.empty_categories') }}</p>
@@ -97,9 +100,11 @@
                    class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all">
           </div>
         </div>
+        </div>
 
         <!-- Actions -->
-        <div class="pt-4 flex flex-col space-y-3">
+        <div class="sticky bottom-0 border-t border-slate-100 bg-white/95 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90 sm:p-8 sm:pt-6">
+          <div class="flex flex-col space-y-3">
           <button type="submit" 
                   :disabled="transactionStore.loading || walletStore.wallets.length === 0" 
                   class="w-full py-6 bg-blue-600 text-white rounded-[2.5rem] text-xs font-black uppercase tracking-[0.2em] shadow-2xl shadow-blue-500/40 hover:bg-blue-700 transition active:scale-[0.98] disabled:opacity-50 flex items-center justify-center space-x-3">
@@ -112,6 +117,7 @@
                   class="w-full py-4 bg-rose-50 dark:bg-rose-900/10 text-rose-600 rounded-[2rem] text-[10px] font-black uppercase tracking-widest hover:bg-rose-100 transition disabled:opacity-50">
             {{ $t('transactions.delete_btn') }}
           </button>
+          </div>
         </div>
       </form>
     </div>
@@ -159,6 +165,19 @@ const isEdit = computed(() => !!props.initialData)
 const filteredCategories = computed(() => {
   return categoryStore.categories.filter(c => c.category_types?.code === txType.value)
 })
+
+const categoriesById = computed(() => {
+  return categoryStore.categories.reduce((map, cat) => {
+    map[cat.id] = cat
+    return map
+  }, {})
+})
+
+const getCategoryDisplayName = (cat) => {
+  if (!cat?.parent_id) return cat?.name || ''
+  const parent = categoriesById.value[cat.parent_id]
+  return parent?.name ? `${parent.name} > ${cat.name}` : cat.name
+}
 
 const formattedDate = computed(() => {
   return props.date.toLocaleDateString(locale.value === 'id' ? 'id-ID' : 'en-US', { 

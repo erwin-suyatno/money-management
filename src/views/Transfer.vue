@@ -21,7 +21,7 @@
     <template v-else>
       <div class="mb-12">
       <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{{ $t('transfer.title') }}</h1>
-      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-2 ml-1">v.1.1 {{ $t('transfer.modal_subtitle') }}</p>
+      <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-2 ml-1">V1.1.4 {{ $t('transfer.modal_subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
