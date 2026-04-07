@@ -34,12 +34,20 @@
         </div>
 
         <!-- Type Toggle -->
-        <div class="flex p-1.5 bg-slate-100 dark:bg-gray-900 rounded-[2rem] shadow-inner">
-          <button v-for="type in categoryStore.types" :key="type.code"
-                  type="button" @click="txType = type.code" 
-                  :class="txType === type.code ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'" 
-                  class="flex-1 py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
-            {{ type.name === 'Income' ? $t('transactions.income') : $t('transactions.expense') }}
+        <div class="grid grid-cols-2 gap-1.5 p-1.5 bg-slate-100 dark:bg-gray-900 rounded-[2rem] shadow-inner">
+          <button
+            type="button"
+            @click="txType = TX_TYPES.INCOME"
+            :class="txType === TX_TYPES.INCOME ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
+            class="w-full py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
+            {{ $t('transactions.income') }}
+          </button>
+          <button
+            type="button"
+            @click="txType = TX_TYPES.EXPENSE"
+            :class="txType === TX_TYPES.EXPENSE ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
+            class="w-full py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
+            {{ $t('transactions.expense') }}
           </button>
         </div>
 
@@ -135,8 +143,12 @@ const { t, locale } = useI18n()
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
+const TX_TYPES = {
+  INCOME: 'INCOME',
+  EXPENSE: 'EXPENSE'
+}
 
-const txType = ref('EXPENSE')
+const txType = ref(TX_TYPES.EXPENSE)
 const selectedWallet = ref('')
 const selectedCategory = ref(null)
 const amount = ref(null)
@@ -175,7 +187,7 @@ watch(() => props.isOpen, async (newVal) => {
     }
 
     if (isEdit.value) {
-      txType.value = props.initialData.category_types?.code || props.initialData.type || 'EXPENSE'
+      txType.value = props.initialData.type === TX_TYPES.INCOME ? TX_TYPES.INCOME : TX_TYPES.EXPENSE
       selectedWallet.value = props.initialData.wallet_id
       selectedCategory.value = props.initialData.category_id
       amount.value = props.initialData.amount
@@ -186,7 +198,7 @@ watch(() => props.isOpen, async (newVal) => {
       }
       
       // Default to Expense
-      txType.value = 'EXPENSE'
+      txType.value = TX_TYPES.EXPENSE
       const expenseCats = categoryStore.expenseCategories
       if (expenseCats.length > 0) selectedCategory.value = expenseCats[0].id
       
