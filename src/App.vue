@@ -47,7 +47,7 @@
       <!-- Premium Footer -->
       <footer v-if="authStore.session" class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 py-12 border-t border-slate-100 dark:border-gray-800/50 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center space-x-3">
-          <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400">v1.1.4</span>
+          <span class="px-3 py-1 bg-slate-100 dark:bg-gray-800 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-400">V1.1.5</span>
           <p class="text-[11px] font-bold text-slate-400">{{ $t('common.all_systems') }}</p>
         </div>
         <div class="flex items-center space-x-1 text-[11px] font-bold text-slate-400">
