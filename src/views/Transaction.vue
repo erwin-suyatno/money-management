@@ -37,7 +37,7 @@
                  </div>
                </div>
       
-               <form @submit.prevent="submitTransaction" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+               <form @submit.prevent="submitTransaction" class="grid grid-cols-1 gap-6">
                   <div class="md:col-span-1">
                      <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2 ml-2">{{ $t('transactions.form_category') }}</label>
                      <select v-model="selectedCategory" required class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl px-5 py-4 focus:ring-0 dark:text-white font-bold transition-all cursor-pointer">
