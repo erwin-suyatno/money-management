@@ -27,7 +27,7 @@
       <div class="mb-12 flex items-center justify-between">
         <div>
           <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter">{{ $t('categories.title') }}</h1>
-          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-2 ml-1">V1.1.5 {{ $t('categories.subtitle') }}</p>
+          <p class="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400 mt-2 ml-1">v1.2.5 {{ $t('categories.subtitle') }}</p>
         </div>
         <button @click="openCreateModal" class="px-8 py-5 bg-indigo-600 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-xl shadow-indigo-500/20 hover:bg-indigo-700 transition active:scale-95 flex items-center space-x-3">
            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>

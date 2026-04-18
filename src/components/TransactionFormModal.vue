@@ -23,15 +23,16 @@
       <!-- Form Body -->
       <form @submit.prevent="handleSubmit" class="flex min-h-0 flex-1 flex-col">
         <div class="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 sm:p-8">
-        <!-- Date Display -->
+        <!-- Date Selection -->
         <div class="flex items-center justify-between bg-slate-50 dark:bg-gray-900/50 p-4 rounded-2xl border border-slate-100 dark:border-gray-800">
-           <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
+           <div class="flex items-center space-x-3 w-full">
+              <div class="w-10 h-10 bg-white dark:bg-gray-800 rounded-xl flex items-center justify-center text-blue-600 shadow-sm shrink-0">
                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               </div>
-              <div>
-                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('transactions.form_date') }}</p>
-                 <p class="text-sm font-black text-slate-900 dark:text-white capitalize">{{ formattedDate }}</p>
+              <div class="flex-1">
+                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">{{ $t('transactions.form_date') }}</p>
+                 <input type="date" v-model="selectedDate" 
+                        class="w-full bg-transparent border-none p-1 focus:ring-0 text-sm font-black dark:text-white cursor-pointer">
               </div>
            </div>
         </div>
@@ -159,6 +160,7 @@ const selectedWallet = ref('')
 const selectedCategory = ref(null)
 const amount = ref(null)
 const description = ref('')
+const selectedDate = ref('') // YYYY-MM-DD format for input type="date"
 
 const isEdit = computed(() => !!props.initialData)
 
@@ -211,6 +213,11 @@ watch(() => props.isOpen, async (newVal) => {
       selectedCategory.value = props.initialData.category_id
       amount.value = props.initialData.amount
       description.value = props.initialData.description || ''
+      
+      // Format existing date for input[type="date"]
+      if (props.initialData.created_at) {
+        selectedDate.value = new Date(props.initialData.created_at).toISOString().split('T')[0]
+      }
     } else {
       if (walletStore.wallets.length > 0 && !selectedWallet.value) {
         selectedWallet.value = walletStore.wallets[0].id
@@ -223,6 +230,13 @@ watch(() => props.isOpen, async (newVal) => {
       
       amount.value = null
       description.value = ''
+      
+      // Use props.date for the default date selection
+      if (props.date) {
+        selectedDate.value = new Date(props.date).toISOString().split('T')[0]
+      } else {
+        selectedDate.value = new Date().toISOString().split('T')[0]
+      }
     }
   }
 })
@@ -232,7 +246,10 @@ const close = () => {
 }
 
 const handleSubmit = async () => {
-  if (!selectedWallet.value || amount.value <= 0) return
+  if (!selectedWallet.value || !selectedCategory.value || amount.value <= 0) {
+    alert(t('transactions.form_validation_error'))
+    return
+  }
 
   if (isEdit.value) {
     const success = await transactionStore.updateTransaction(props.initialData.id, {
@@ -240,24 +257,25 @@ const handleSubmit = async () => {
       type: txType.value,
       category_id: selectedCategory.value,
       amount: amount.value,
-      description: description.value
+      description: description.value,
+      created_at: new Date(selectedDate.value).toISOString()
     })
     if (success) {
       emit('success')
       close()
     }
   } else {
-    // Set the time to current time but on the selected date
+    // Combine selected date with current time
     const now = new Date()
-    const txDate = new Date(props.date)
-    txDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds())
+    const finalDate = new Date(selectedDate.value)
+    finalDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds())
 
     const success = await transactionStore.addTransaction(
       selectedWallet.value,
       txType.value,
       amount.value,
       description.value,
-      txDate.toISOString(),
+      finalDate.toISOString(),
       selectedCategory.value
     )
 
