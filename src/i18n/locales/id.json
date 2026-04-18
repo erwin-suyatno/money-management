@@ -56,6 +56,17 @@
     "creating": "Memproses...",
     "delete_confirm": "Apakah Anda yakin ingin menghapus dompet ini? Semua transaksi terkait juga akan dihapus."
   },
+  "wallet_detail": {
+    "title": "Detail Dompet",
+    "filter_all": "Semua",
+    "filter_tx": "Transaksi",
+    "filter_tr": "Transfer",
+    "transfer_to": "Kirim ke {wallet}",
+    "transfer_from": "Terima dari {wallet}",
+    "empty_history": "Belum ada aktivitas di dompet ini",
+    "view_list": "Daftar",
+    "view_calendar": "Kalender"
+  },
   "categories": {
     "title": "Master Data Kategori",
     "subtitle": "ARSITEKTUR",
@@ -110,7 +121,8 @@
     "update_btn": "Perbarui Transaksi",
     "delete_btn": "Hapus Transaksi",
     "delete_confirm": "Apakah Anda yakin ingin menghapus transaksi ini?",
-    "delete_warning": "Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan dan akan mempengaruhi saldo dompet Anda."
+    "delete_warning": "Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan dan akan mempengaruhi saldo dompet Anda.",
+    "form_validation_error": "Lengkapi data dompet, kategori, dan nominal (> 0)."
   },
   "transfer": {
     "title": "Transfer Dana",

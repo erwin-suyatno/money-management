@@ -56,6 +56,17 @@
     "creating": "Creating...",
     "delete_confirm": "Are you sure you want to delete this wallet? This action will remove all associated transactions."
   },
+  "wallet_detail": {
+    "title": "Wallet Detail",
+    "filter_all": "All",
+    "filter_tx": "Transactions",
+    "filter_tr": "Transfers",
+    "transfer_to": "Sent to {wallet}",
+    "transfer_from": "Received from {wallet}",
+    "empty_history": "No activity found for this wallet",
+    "view_list": "List",
+    "view_calendar": "Calendar"
+  },
   "categories": {
     "title": "Master Data Categories",
     "subtitle": "ARCHITECTURE",
@@ -110,7 +121,8 @@
     "update_btn": "Update Transaction",
     "delete_btn": "Delete Transaction",
     "delete_confirm": "Are you sure you want to delete this transaction?",
-    "delete_warning": "Are you sure you want to delete this transaction? This action cannot be undone and will affect your wallet balance."
+    "delete_warning": "Are you sure you want to delete this transaction? This action cannot be undone and will affect your wallet balance.",
+    "form_validation_error": "Please select a wallet, category, and enter an amount greater than 0."
   },
   "transfer": {
     "title": "Money Transfer",

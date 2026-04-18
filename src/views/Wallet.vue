@@ -35,11 +35,12 @@
     <!-- Wallet Grid -->
     <div v-else class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
       <div v-for="(wallet, idx) in walletStore.wallets" :key="wallet.id" 
+           @click="openDetail(wallet)"
            :class="[
              idx % 3 === 0 ? 'bg-indigo-600' : 
              idx % 3 === 1 ? 'bg-emerald-600' : 'bg-slate-900'
            ]"
-           class="rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl transition-all hover:-translate-y-2 hover:shadow-indigo-500/10 min-h-[240px] flex flex-col justify-between text-white border-b-4 border-black/10">
+           class="rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl transition-all hover:-translate-y-2 hover:shadow-indigo-500/10 min-h-[240px] flex flex-col justify-between text-white border-b-4 border-black/10 cursor-pointer">
         
         <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-20 pointer-events-none">
@@ -58,7 +59,7 @@
               <h3 class="text-xl font-black italic tracking-tighter">{{ wallet.name.split(' ')[0] || 'BANK' }}</h3>
             </div>
             <div class="flex flex-col items-end">
-               <button @click="deleteWallet(wallet.id)" class="p-2 text-white/40 hover:text-white transition-colors">
+               <button @click.stop="deleteWallet(wallet.id)" class="p-2 text-white/40 hover:text-white transition-colors relative z-20">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                </button>
             </div>
@@ -131,6 +132,9 @@
         </div>
       </div>
     </div>
+    
+    <!-- Wallet Detail Modal -->
+    <WalletDetailModal :is-open="showDetailModal" :wallet="selectedWallet" @close="showDetailModal = false" />
     </template>
   </div>
 </template>
@@ -138,12 +142,19 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useWalletStore } from '../stores/useWalletStore'
+import { useTransactionStore } from '../stores/useTransactionStore'
+import { useTransferStore } from '../stores/useTransferStore'
 import Skeleton from '../components/Skeleton.vue'
+import WalletDetailModal from '../components/WalletDetailModal.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
 const walletStore = useWalletStore()
+const transactionStore = useTransactionStore()
+const transferStore = useTransferStore()
 const showModal = ref(false)
+const showDetailModal = ref(false)
+const selectedWallet = ref(null)
 const newWalletName = ref('')
 const newWalletBalance = ref(0)
 const selectedColor = ref('#4F46E5')
@@ -151,6 +162,8 @@ const colors = ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#8B5CF6'
 
 onMounted(() => {
   walletStore.fetchWallets()
+  transactionStore.fetchTransactions()
+  transferStore.fetchTransfers()
 })
 
 const totalBalance = computed(() => {
@@ -163,6 +176,11 @@ const formatCurrency = (value) => {
     currency: 'IDR',
     minimumFractionDigits: 0
   }).format(value)
+}
+
+const openDetail = (wallet) => {
+  selectedWallet.value = wallet
+  showDetailModal.value = true
 }
 
 const submitWallet = async () => {
