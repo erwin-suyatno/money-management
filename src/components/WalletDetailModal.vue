@@ -159,8 +159,8 @@
          <div class="flex items-center justify-between">
             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('transactions.pagination_info', { current: currentPage, total: totalPages }) }}</span>
             <div class="flex space-x-2">
-               <button @click="currentPage--" :disabled="currentPage === 1" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">Prev</button>
-               <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">Next</button>
+               <button @click="currentPage--" :disabled="currentPage === 1" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">{{ $t('common.prev') }}</button>
+               <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">{{ $t('common.next') }}</button>
             </div>
          </div>
       </div>

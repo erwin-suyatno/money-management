@@ -7,8 +7,11 @@
     <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-in fade-in zoom-in duration-300 overflow-hidden shadow-2xl border-t-8 border-indigo-600">
       <!-- Header -->
       <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
-        <div>
-          <h3 class="text-xl font-black dark:text-white tracking-tight">{{ formattedDate }}</h3>
+        <div class="flex-1">
+          <div class="flex items-center gap-3">
+            <h3 class="text-xl font-black dark:text-white tracking-tight">{{ formattedDate }}</h3>
+            <span v-if="isToday" class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest border border-indigo-200 dark:border-indigo-800/50">{{ $t('transactions.today') }}</span>
+          </div>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ $t('dashboard.calendar_modal_subtitle') }}</p>
         </div>
         <button @click="close" class="p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
@@ -88,6 +91,14 @@ const formattedDate = computed(() => {
     month: 'long', 
     year: 'numeric' 
   })
+})
+
+const isToday = computed(() => {
+  if (!props.date) return false
+  const today = new Date()
+  return props.date.getDate() === today.getDate() &&
+         props.date.getMonth() === today.getMonth() &&
+         props.date.getFullYear() === today.getFullYear()
 })
 
 const close = () => {

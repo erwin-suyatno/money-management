@@ -48,50 +48,62 @@
         </div>
       </div>
 
-      <!-- Summary Cards Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-16">
-        <!-- Main Total Balance Card -->
-        <div class="lg:col-span-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-[3rem] p-10 text-white shadow-2xl shadow-indigo-500/30 relative overflow-hidden group">
-          <div class="absolute -right-20 -top-20 w-96 h-96 bg-white/10 rounded-full blur-[100px] group-hover:bg-white/20 transition-all duration-1000"></div>
-          <div class="relative z-10 flex flex-col h-full justify-between">
-            <div>
-              <h3 class="text-indigo-100/80 font-black text-[10px] uppercase tracking-[0.3em] mb-6">{{ $t('dashboard.working_balance') }}</h3>
-              <div class="flex items-baseline space-x-2">
-                 <span class="text-2xl font-medium text-indigo-100/60">Rp</span>
-                 <p class="text-5xl sm:text-6xl font-black tracking-tighter tabular-nums">{{ totalBalance.toLocaleString($i18n.locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+      <!-- Tab Navigation -->
+      <div class="mb-10 flex space-x-3 overflow-x-auto pb-4 scrollbar-hide">
+        <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id"
+                :class="activeTab === tab.id ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900' : 'bg-white text-slate-500 hover:bg-slate-50 dark:bg-gray-800 dark:text-slate-400 dark:hover:bg-gray-700'"
+                class="px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center space-x-3 shadow-sm">
+           <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" :d="tab.icon"/></svg>
+           <span>{{ tab.name }}</span>
+        </button>
+      </div>
+
+      <!-- Tab Content: Overview -->
+      <div v-show="activeTab === 'overview'" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-12">
+        <!-- Summary Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <!-- Main Total Balance Card -->
+          <div class="lg:col-span-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 rounded-[3rem] p-10 text-white shadow-2xl shadow-indigo-500/30 relative overflow-hidden group">
+            <div class="absolute -right-20 -top-20 w-96 h-96 bg-white/10 rounded-full blur-[100px] group-hover:bg-white/20 transition-all duration-1000"></div>
+            <div class="relative z-10 flex flex-col h-full justify-between">
+              <div>
+                <h3 class="text-indigo-100/80 font-black text-[10px] uppercase tracking-[0.3em] mb-6">{{ $t('dashboard.working_balance') }}</h3>
+                <div class="flex items-baseline space-x-2">
+                   <span class="text-2xl font-medium text-indigo-100/60">Rp</span>
+                   <p class="text-5xl sm:text-6xl font-black tracking-tighter tabular-nums">{{ totalBalance.toLocaleString($i18n.locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+                </div>
+              </div>
+              <div class="mt-12 flex items-center space-x-4">
+                 <div :class="netFlow >= 0 ? 'bg-white/20' : 'bg-rose-500/30'" class="px-5 py-2.5 rounded-2xl backdrop-blur-md flex items-center space-x-2 border border-white/10 font-black text-[10px] uppercase tracking-widest">
+                    {{ netFlow >= 0 ? '+' : '' }}{{ ((netFlow/Math.max(totalIncome, 1))*100).toFixed(1) }}% Flow
+                 </div>
+                 <p class="text-xs font-bold text-indigo-100/60 transition-all italic">{{ $t('dashboard.relative_info') }}</p>
               </div>
             </div>
-            <div class="mt-12 flex items-center space-x-4">
-               <div :class="netFlow >= 0 ? 'bg-white/20' : 'bg-rose-500/30'" class="px-5 py-2.5 rounded-2xl backdrop-blur-md flex items-center space-x-2 border border-white/10 font-black text-[10px] uppercase tracking-widest">
-                  {{ netFlow >= 0 ? '+' : '' }}{{ ((netFlow/Math.max(totalIncome, 1))*100).toFixed(1) }}% Flow
-               </div>
-               <p class="text-xs font-bold text-indigo-100/60 transition-all italic">{{ $t('dashboard.relative_info') }}</p>
-            </div>
           </div>
-        </div>
 
-        <!-- Income/Expense Side Stats -->
-        <div class="lg:col-span-4 grid grid-cols-1 gap-8">
-          <div class="premium-card p-8 flex flex-col justify-between group hover:border-emerald-200 dark:hover:border-emerald-900 transition-colors">
-            <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
-               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+          <!-- Income/Expense Side Stats -->
+          <div class="lg:col-span-4 grid grid-cols-1 gap-8">
+            <div class="premium-card p-8 flex flex-col justify-between group hover:border-emerald-200 dark:hover:border-emerald-900 transition-colors">
+              <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/40 rounded-2xl flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
+              </div>
+              <div>
+                <h3 class="text-slate-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mb-1">{{ $t('dashboard.income') }}</h3>
+                <p class="text-3xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">Rp {{ totalIncome.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+              </div>
             </div>
-            <div>
-              <h3 class="text-slate-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mb-1">{{ $t('dashboard.income') }}</h3>
-              <p class="text-3xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">Rp {{ totalIncome.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}</p>
-            </div>
-          </div>
-          <div class="premium-card p-8 flex flex-col justify-between group hover:border-rose-200 dark:hover:border-rose-900 transition-colors">
-            <div class="w-12 h-12 bg-rose-50 dark:bg-rose-900/40 rounded-2xl flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
-               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
-            </div>
-            <div>
-              <h3 class="text-slate-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mb-1">{{ $t('dashboard.expense') }}</h3>
-              <p class="text-3xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">Rp {{ totalExpense.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+            <div class="premium-card p-8 flex flex-col justify-between group hover:border-rose-200 dark:hover:border-rose-900 transition-colors">
+              <div class="w-12 h-12 bg-rose-50 dark:bg-rose-900/40 rounded-2xl flex items-center justify-center text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
+                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
+              </div>
+              <div>
+                <h3 class="text-slate-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-[0.2em] mb-1">{{ $t('dashboard.expense') }}</h3>
+                <p class="text-3xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">Rp {{ totalExpense.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Activity & Calendar Layout -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -155,6 +167,43 @@
            </div>
         </div>
       </div>
+      </div>
+
+      <!-- Tab Content: Analytics -->
+      <div v-if="activeTab === 'analytics'" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-8">
+              <CashFlowChart :transactions="filteredTransactions" :is-dark-mode="isDarkMode" />
+            </div>
+            <div class="lg:col-span-4">
+              <TopSpendingList :transactions="filteredTransactions" />
+            </div>
+         </div>
+         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4">
+              <CategoryDonutChart :transactions="filteredTransactions" type="EXPENSE" :title="$t('dashboard.expense') || 'Expense'" :subtitle="$t('analytics.breakdown') || 'Breakdown'" :is-dark-mode="isDarkMode" />
+            </div>
+            <div class="lg:col-span-4">
+              <CategoryDonutChart :transactions="filteredTransactions" type="INCOME" :title="$t('dashboard.income') || 'Income'" :subtitle="$t('analytics.breakdown') || 'Breakdown'" :is-dark-mode="isDarkMode" />
+            </div>
+            <div class="lg:col-span-4">
+              <DailySpendingChart :transactions="filteredTransactions" :is-dark-mode="isDarkMode" />
+            </div>
+         </div>
+      </div>
+
+      <!-- Tab Content: Health & Planning -->
+      <div v-if="activeTab === 'health'" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <SavingsRateCard :transactions="filteredTransactions" />
+            <HealthScoreCard :transactions="filteredTransactions" />
+            <EmergencyFundCard :transactions="filteredTransactions" />
+         </div>
+         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <NetWorthChart :total-balance="totalBalance" :is-dark-mode="isDarkMode" />
+            <BudgetActualChart :transactions="filteredTransactions" :is-dark-mode="isDarkMode" />
+         </div>
+      </div>
     </template>
 
     <!-- Modals -->
@@ -172,15 +221,32 @@ import { useI18n } from 'vue-i18n'
 import CalendarDayModal from '../components/CalendarDayModal.vue'
 import TransactionFormModal from '../components/TransactionFormModal.vue'
 import Skeleton from '../components/Skeleton.vue'
+import CashFlowChart from '../components/analytics/CashFlowChart.vue'
+import CategoryDonutChart from '../components/analytics/CategoryDonutChart.vue'
+import TopSpendingList from '../components/analytics/TopSpendingList.vue'
+import DailySpendingChart from '../components/analytics/DailySpendingChart.vue'
+import SavingsRateCard from '../components/analytics/SavingsRateCard.vue'
+import HealthScoreCard from '../components/analytics/HealthScoreCard.vue'
+import NetWorthChart from '../components/analytics/NetWorthChart.vue'
+import BudgetActualChart from '../components/analytics/BudgetActualChart.vue'
+import EmergencyFundCard from '../components/analytics/EmergencyFundCard.vue'
 
 const { locale } = useI18n()
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
 const router = useRouter()
 
+const isDarkMode = computed(() => document.documentElement.classList.contains('dark'))
 const selectedRange = ref('30d')
 const now = new Date()
 const currentMonth = ref(new Date(now.getFullYear(), now.getMonth(), 1))
+
+const activeTab = ref('overview')
+const tabs = [
+  { id: 'overview', name: 'Overview', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+  { id: 'analytics', name: 'Analytics', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+  { id: 'health', name: 'Health & Planning', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' }
+]
 
 onMounted(async () => {
   await walletStore.fetchWallets()

@@ -1,6 +1,66 @@
 import { defineStore } from 'pinia'
 import { supabase } from '../services/supabase'
 import { useAuthStore } from './useAuthStore'
+import { markRaw } from 'vue'
+import { 
+  ShoppingBag, Utensils, Car, Home, Zap, 
+  Coffee, Heart, Smartphone, Gift, Briefcase, 
+  CircleDollarSign, PiggyBank, Landmark, Activity,
+  Tag, Wallet, CreditCard, Book, Tv, Music, 
+  TrendingUp, TrendingDown, Shield, Bitcoin,
+  ShoppingCart, Gamepad2, Plane, GraduationCap, 
+  Stethoscope, Dumbbell, Wine, Camera, 
+  Wrench, Globe, Mail, Phone, Lock, 
+  Key, User, Settings, AlertCircle, 
+  CheckCircle2, Info, HelpCircle
+} from 'lucide-vue-next'
+
+const iconMap = {
+  'shopping-bag': markRaw(ShoppingBag),
+  'utensils': markRaw(Utensils),
+  'car': markRaw(Car),
+  'home': markRaw(Home),
+  'zap': markRaw(Zap),
+  'coffee': markRaw(Coffee),
+  'heart': markRaw(Heart),
+  'smartphone': markRaw(Smartphone),
+  'gift': markRaw(Gift),
+  'briefcase': markRaw(Briefcase),
+  'dollar': markRaw(CircleDollarSign),
+  'piggy-bank': markRaw(PiggyBank),
+  'bank': markRaw(Landmark),
+  'activity': markRaw(Activity),
+  'tag': markRaw(Tag),
+  'wallet': markRaw(Wallet),
+  'credit-card': markRaw(CreditCard),
+  'book': markRaw(Book),
+  'tv': markRaw(Tv),
+  'music': markRaw(Music),
+  'up': markRaw(TrendingUp),
+  'down': markRaw(TrendingDown),
+  'shield': markRaw(Shield),
+  'bitcoin': markRaw(Bitcoin),
+  'shopping-cart': markRaw(ShoppingCart),
+  'game': markRaw(Gamepad2),
+  'plane': markRaw(Plane),
+  'education': markRaw(GraduationCap),
+  'health': markRaw(Stethoscope),
+  'fitness': markRaw(Dumbbell),
+  'drinks': markRaw(Wine),
+  'camera': markRaw(Camera),
+  'tools': markRaw(Wrench),
+  'web': markRaw(Globe),
+  'email': markRaw(Mail),
+  'phone': markRaw(Phone),
+  'lock': markRaw(Lock),
+  'key': markRaw(Key),
+  'user': markRaw(User),
+  'settings': markRaw(Settings),
+  'alert': markRaw(AlertCircle),
+  'success': markRaw(CheckCircle2),
+  'info': markRaw(Info),
+  'help': markRaw(HelpCircle)
+}
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
@@ -16,7 +76,15 @@ export const useCategoryStore = defineStore('category', {
     investmentCategories: (state) => state.categories.filter(c => c.category_types?.code === 'INVESTMENT'),
     
     // Helper to get category by ID with full details
-    getCategoryById: (state) => (id) => state.categories.find(c => c.id === id)
+    getCategoryById: (state) => (id) => state.categories.find(c => c.id === id),
+
+    // Resolve icon string to component
+    resolveIcon: () => (iconName) => {
+      return iconMap[iconName] || Tag
+    },
+
+    // Get list of all available icon names
+    availableIcons: () => Object.keys(iconMap)
   },
   actions: {
     async fetchInitialData() {
@@ -65,8 +133,6 @@ export const useCategoryStore = defineStore('category', {
         ...payload,
         user_id: authStore.user?.id
       }
-
-      console.log('Inserting category with data:', insertData)
 
       const { data, error } = await supabase
         .from('categories')

@@ -5,7 +5,8 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     session: null,
-    loading: true
+    loading: true,
+    error: null
   }),
   actions: {
     async initialize() {
@@ -34,6 +35,24 @@ export const useAuthStore = defineStore('auth', {
       const { error } = await supabase.auth.signOut()
       if (error) {
         console.error('Logout error:', error.message)
+      }
+      this.session = null
+      this.user = null
+    },
+    async updateFinancialProfile(profileData) {
+      this.loading = true
+      try {
+        const { data, error } = await supabase.auth.updateUser({
+          data: { financial_profile: profileData }
+        })
+        if (error) throw error
+        this.user = data.user
+        return true
+      } catch (err) {
+        this.error = err.message
+        return false
+      } finally {
+        this.loading = false
       }
     }
   }

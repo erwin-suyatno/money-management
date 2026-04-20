@@ -1,7 +1,7 @@
 <template>
   <div v-if="isOpen" class="fixed inset-0 z-[110] flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="close"></div>
+    <div class="absolute inset-0 bg-slate-700/60 backdrop-blur-md" @click="close"></div>
     
     <!-- Modal Content -->
     <div class="premium-card !p-0 relative z-10 flex h-[100dvh] w-full max-h-[100dvh] flex-col overflow-hidden rounded-t-[2rem] border-t-8 border-blue-600 shadow-2xl animate-in fade-in zoom-in duration-300 sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:rounded-[2rem]">
@@ -42,14 +42,14 @@
           <button
             type="button"
             @click="txType = TX_TYPES.INCOME"
-            :class="txType === TX_TYPES.INCOME ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
+            :class="txType === TX_TYPES.INCOME ? 'bg-white dark:bg-gray-800 text-green-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
             class="w-full py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
             {{ $t('transactions.income') }}
           </button>
           <button
             type="button"
             @click="txType = TX_TYPES.EXPENSE"
-            :class="txType === TX_TYPES.EXPENSE ? 'bg-white dark:bg-gray-800 text-indigo-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
+            :class="txType === TX_TYPES.EXPENSE ? 'bg-white dark:bg-gray-800 text-red-600 shadow-xl scale-[1.02]' : 'text-slate-400'"
             class="w-full py-3 rounded-[1.5rem] text-[9px] font-black uppercase tracking-widest transition-all">
             {{ $t('transactions.expense') }}
           </button>
@@ -67,7 +67,7 @@
                       class="p-4 rounded-3xl transition-all flex flex-col items-center justify-center space-y-2 group">
                  <div :style="{ backgroundColor: selectedCategory === cat.id ? cat.color : '#94a3b8' }" 
                       class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm transition-transform group-active:scale-90">
-                    <component :is="cat.icon || 'tag'" class="w-5 h-5" />
+                    <component :is="categoryStore.resolveIcon(cat.icon)" class="w-5 h-5" />
                  </div>
                  <span class="w-full text-center text-xs font-bold leading-tight wrap-break-word dark:text-slate-200">{{ getCategoryDisplayName(cat) }}</span>
               </button>
@@ -216,7 +216,11 @@ watch(() => props.isOpen, async (newVal) => {
       
       // Format existing date for input[type="date"]
       if (props.initialData.created_at) {
-        selectedDate.value = new Date(props.initialData.created_at).toISOString().split('T')[0]
+        const d = new Date(props.initialData.created_at)
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        selectedDate.value = `${y}-${m}-${day}`
       }
     } else {
       if (walletStore.wallets.length > 0 && !selectedWallet.value) {
@@ -233,9 +237,17 @@ watch(() => props.isOpen, async (newVal) => {
       
       // Use props.date for the default date selection
       if (props.date) {
-        selectedDate.value = new Date(props.date).toISOString().split('T')[0]
+        const d = props.date
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        selectedDate.value = `${y}-${m}-${day}`
       } else {
-        selectedDate.value = new Date().toISOString().split('T')[0]
+        const d = new Date()
+        const y = d.getFullYear()
+        const m = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        selectedDate.value = `${y}-${m}-${day}`
       }
     }
   }

@@ -4,12 +4,17 @@ import { supabase } from '../services/supabase'
 const routes = [
   { path: '/', redirect: '/dashboard' },
   { path: '/login', component: () => import('../views/Login.vue'), name: 'Login', meta: { public: true } },
-  { path: '/dashboard', component: () => import('../views/Dashboard.vue'), name: 'Dashboard' },
-  { path: '/wallet', component: () => import('../views/Wallet.vue'), name: 'Wallet' },
-  { path: '/transaction', component: () => import('../views/Transaction.vue'), name: 'Transaction' },
-  { path: '/transfer', component: () => import('../views/Transfer.vue'), name: 'Transfer' },
-  { path: '/category', component: () => import('../views/Category.vue'), name: 'Category' },
-  { path: '/import', component: () => import('../views/ImportOCR.vue'), name: 'Import' },
+  { path: '/dashboard', component: () => import('../views/DashboardView.vue'), name: 'Dashboard' },
+  { path: '/wallet', component: () => import('../views/WalletsView.vue'), name: 'Wallet' },
+  { path: '/transaction', component: () => import('../views/TransactionsView.vue'), name: 'Transaction' },
+  { path: '/transfer', component: () => import('../views/TransfersView.vue'), name: 'Transfer' },
+  { path: '/category', component: () => import('../views/CategoriesView.vue'), name: 'Category' },
+  { path: '/import', component: () => import('../views/ImportsView.vue'), name: 'Import' },
+  { path: '/budget', component: () => import('../views/BudgetView.vue'), name: 'Budget' },
+  { path: '/debt', component: () => import('../views/DebtsView.vue'), name: 'Debt' },
+  { path: '/emergency-fund', component: () => import('../views/EmergencyFundView.vue'), name: 'EmergencyFund' },
+  { path: '/whats-new', component: () => import('../views/WhatsNewView.vue'), name: 'WhatsNew' },
+  { path: '/settings', component: () => import('../views/SettingsView.vue'), name: 'Settings' },
   // Error handling routes
   { 
     path: '/error/:code', 
