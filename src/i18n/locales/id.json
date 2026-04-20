@@ -110,7 +110,6 @@
     "add": "Tambah Transaksi",
     "expense": "Pengeluaran",
     "income": "Pemasukan",
-    "saving": "Tabungan",
     "investment": "Investasi",
     "today": "Hari Ini",
     "yesterday": "Kemarin",
@@ -213,9 +212,18 @@
     "file_label": "Berkas"
   },
   "errors": {
-    "404": { "title": "Halaman Tidak Ditemukan", "message": "Halaman yang Anda cari telah menghilang." },
-    "401": { "title": "Akses Ditolak", "message": "Silakan masuk untuk mengakses area ini." },
-    "500": { "title": "Kesalahan Server", "message": "Terjadi masalah pada sistem kami." },
+    "404": {
+      "title": "Halaman Tidak Ditemukan",
+      "message": "Halaman yang Anda cari telah menghilang."
+    },
+    "401": {
+      "title": "Akses Ditolak",
+      "message": "Silakan masuk untuk mengakses area ini."
+    },
+    "500": {
+      "title": "Kesalahan Server",
+      "message": "Terjadi masalah pada sistem kami."
+    },
     "default_title": "Kesalahan Tak Terduga",
     "default_message": "Terjadi masalah. Silakan coba lagi nanti.",
     "btn_home": "Kembali ke Dashboard",

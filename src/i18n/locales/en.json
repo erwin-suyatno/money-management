@@ -110,7 +110,6 @@
     "add": "Add Transaction",
     "expense": "Expense",
     "income": "Income",
-    "saving": "Saving",
     "investment": "Investment",
     "today": "Today",
     "yesterday": "Yesterday",
@@ -213,9 +212,18 @@
     "file_label": "File"
   },
   "errors": {
-    "404": { "title": "Page Not Found", "message": "The page you're looking for has vanished." },
-    "401": { "title": "Access Denied", "message": "Please sign in to access this area." },
-    "500": { "title": "Server Error", "message": "Something went wrong on our end." },
+    "404": {
+      "title": "Page Not Found",
+      "message": "The page you're looking for has vanished."
+    },
+    "401": {
+      "title": "Access Denied",
+      "message": "Please sign in to access this area."
+    },
+    "500": {
+      "title": "Server Error",
+      "message": "Something went wrong on our end."
+    },
     "default_title": "Unexpected Error",
     "default_message": "Something went wrong. Please try again later.",
     "btn_home": "Return to Dashboard",
