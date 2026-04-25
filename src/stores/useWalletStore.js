@@ -13,9 +13,17 @@ export const useWalletStore = defineStore('wallet', {
       this.loading = true
       this.error = null
       
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.wallets = []
+        this.loading = false
+        return
+      }
+
       const { data, error } = await supabase
         .from('wallets')
         .select('*')
+        .eq('workspace_id', authStore.activeWorkspaceId)
         .order('created_at', { ascending: false })
         
       if (error) {
@@ -32,8 +40,8 @@ export const useWalletStore = defineStore('wallet', {
       this.error = null
       
       const authStore = useAuthStore()
-      if (!authStore.user) {
-        this.error = "User not logged in"
+      if (!authStore.user || !authStore.activeWorkspaceId) {
+        this.error = "Workspace not selected"
         this.loading = false
         return false
       }
@@ -44,7 +52,8 @@ export const useWalletStore = defineStore('wallet', {
           { 
             name, 
             balance: initialBalance,
-            user_id: authStore.user.id
+            user_id: authStore.user.id,
+            workspace_id: authStore.activeWorkspaceId
           }
         ])
         .select()

@@ -51,6 +51,13 @@ export const useBudgetStore = defineStore('budget', {
       this.loading = true
       this.error = null
 
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.budgets = []
+        this.loading = false
+        return
+      }
+
       try {
         const { data, error } = await supabase
           .from('budgets')
@@ -64,6 +71,7 @@ export const useBudgetStore = defineStore('budget', {
               category_types (code, name)
             )
           `)
+          .eq('workspace_id', authStore.activeWorkspaceId)
           .order('created_at', { ascending: false })
 
         if (error) throw error
@@ -78,13 +86,19 @@ export const useBudgetStore = defineStore('budget', {
     async addBudget(payload) {
       this.loading = true
       const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.error = "Workspace not selected"
+        this.loading = false
+        return false
+      }
       
       try {
         const { data, error } = await supabase
           .from('budgets')
           .insert([{
             ...payload,
-            user_id: authStore.user?.id
+            user_id: authStore.user?.id,
+            workspace_id: authStore.activeWorkspaceId
           }])
           .select(`
             *,

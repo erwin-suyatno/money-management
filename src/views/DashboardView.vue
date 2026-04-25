@@ -406,7 +406,7 @@ const activeTab = ref('overview')
 const showAddModal = ref(false)
 const showDetailModal = ref(false)
 const editingTx = ref(null)
-const selectedDate = ref(null)
+const selectedDate = ref(new Date())
 const currentMonth = ref(new Date())
 
 const showOnboarding = ref(!authStore.user?.user_metadata?.financial_profile)

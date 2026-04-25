@@ -22,6 +22,12 @@ export const useDebtStore = defineStore('debt', () => {
    */
   async function fetchDebts() {
     loading.value = true
+    if (!authStore.activeWorkspaceId) {
+      debts.value = []
+      loading.value = false
+      return
+    }
+
     try {
       const { data, error: err } = await supabase
         .from('debts')
@@ -29,6 +35,7 @@ export const useDebtStore = defineStore('debt', () => {
           *,
           categories (id, name, color, icon)
         `)
+        .eq('workspace_id', authStore.activeWorkspaceId)
         .order('created_at', { ascending: false })
 
       if (err) throw err
@@ -45,11 +52,16 @@ export const useDebtStore = defineStore('debt', () => {
    * Add new debt
    */
   async function addDebt(payload) {
+    if (!authStore.activeWorkspaceId) return null
     loading.value = true
     try {
       const { data, error: err } = await supabase
         .from('debts')
-        .insert([{ ...payload, user_id: authStore.user?.id }])
+        .insert([{ 
+          ...payload, 
+          user_id: authStore.user?.id,
+          workspace_id: authStore.activeWorkspaceId
+        }])
         .select()
         .single()
 
