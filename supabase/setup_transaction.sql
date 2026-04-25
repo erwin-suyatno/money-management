@@ -12,18 +12,30 @@ CREATE TABLE public.transactions (
 -- Aktifkan RLS
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
--- Policy (Users hanya bisa melihat dan menambah transaksi mereka sendiri)
+-- Policy (Users hanya bisa melihat dan menambah transaksi mereka sendiri + Cek kepemilikan wallet)
 CREATE POLICY "Users can view their own transactions" 
 ON public.transactions FOR SELECT 
 USING (auth.uid() = created_by);
 
 CREATE POLICY "Users can insert their own transactions" 
 ON public.transactions FOR INSERT 
-WITH CHECK (auth.uid() = created_by);
+WITH CHECK (
+    auth.uid() = created_by AND 
+    EXISTS (
+        SELECT 1 FROM public.wallets 
+        WHERE id = wallet_id AND user_id = auth.uid()
+    )
+);
 
 CREATE POLICY "Users can update their own transactions" 
 ON public.transactions FOR UPDATE 
-USING (auth.uid() = created_by);
+USING (auth.uid() = created_by)
+WITH CHECK (
+    EXISTS (
+        SELECT 1 FROM public.wallets 
+        WHERE id = wallet_id AND user_id = auth.uid()
+    )
+);
 
 CREATE POLICY "Users can delete their own transactions" 
 ON public.transactions FOR DELETE 

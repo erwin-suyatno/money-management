@@ -1,8 +1,41 @@
--- 1. Tambahkan policy UPDATE (Agar user bisa mengedit transfer mereka sendiri)
+-- 0. Buat tabel transfers jika belum ada
+CREATE TABLE IF NOT EXISTS public.transfers (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    from_wallet_id UUID NOT NULL REFERENCES public.wallets(id) ON DELETE CASCADE,
+    to_wallet_id UUID NOT NULL REFERENCES public.wallets(id) ON DELETE CASCADE,
+    amount NUMERIC NOT NULL CHECK (amount > 0),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
+);
+
+ALTER TABLE public.transfers ENABLE ROW LEVEL SECURITY;
+
+-- 0.1 Policy: Users can view their own transfers
+DROP POLICY IF EXISTS "Users can view their own transfers" ON public.transfers;
+CREATE POLICY "Users can view their own transfers" 
+ON public.transfers FOR SELECT 
+USING (auth.uid() = created_by);
+
+-- 0.2 Policy: Users can insert their own transfers (Cek kepemilikan dompet asal & tujuan)
+DROP POLICY IF EXISTS "Users can insert their own transfers" ON public.transfers;
+CREATE POLICY "Users can insert their own transfers" 
+ON public.transfers FOR INSERT 
+WITH CHECK (
+    auth.uid() = created_by AND 
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = from_wallet_id AND user_id = auth.uid()) AND
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = to_wallet_id AND user_id = auth.uid())
+);
+
+-- 1. Tambahkan policy UPDATE (Agar user bisa mengedit transfer mereka sendiri + Cek kepemilikan wallet)
 DROP POLICY IF EXISTS "Users can update their own transfers" ON public.transfers;
 CREATE POLICY "Users can update their own transfers" 
 ON public.transfers FOR UPDATE 
-USING (auth.uid() = created_by);
+USING (auth.uid() = created_by)
+WITH CHECK (
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = from_wallet_id AND user_id = auth.uid()) AND
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = to_wallet_id AND user_id = auth.uid())
+);
 
 -- 2. Tambahkan/Pastikan policy DELETE (Agar user bisa menghapus transfer mereka sendiri)
 DROP POLICY IF EXISTS "Users can delete their own transfers" ON public.transfers;

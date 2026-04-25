@@ -25,6 +25,7 @@ export const useTransferStore = defineStore('transfer', {
         
       if (error) {
         this.error = error.message
+        console.error('Error fetching transfers:', error)
       } else {
         this.transfers = data || []
       }

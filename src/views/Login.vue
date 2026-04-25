@@ -7,8 +7,8 @@
        <div class="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-emerald-500/10 dark:bg-emerald-600/10 rounded-full blur-[100px] animate-pulse delay-700 transition-all"></div>
        <div class="absolute bottom-[0%] left-[20%] w-[50%] h-[50%] bg-slate-200/50 dark:bg-indigo-900/10 rounded-full blur-[150px] transition-all"></div>
        
-       <!-- Grid Overlay -->
-       <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 dark:opacity-[0.03] mix-blend-overlay"></div>
+       <!-- Grid Overlay (Subtle noise texture substitute) -->
+       <div class="absolute inset-0 bg-slate-900/5 dark:bg-black/20 mix-blend-overlay"></div>
     </div>
 
     <!-- Login Container -->

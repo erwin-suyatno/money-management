@@ -1,25 +1,25 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-[120] flex items-end justify-center overflow-hidden p-0 sm:items-center sm:p-4">
+  <div v-if="isOpen" class="fixed inset-0 z-[1000] flex items-end justify-center overflow-hidden p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="close"></div>
     
     <!-- Modal Content -->
-    <div class="premium-card !p-0 relative z-10 flex h-[100dvh] w-full max-h-[100dvh] flex-col overflow-hidden rounded-t-[2.5rem] border-t-8 border-indigo-600 shadow-2xl animate-in fade-in slide-in-from-bottom duration-500 sm:h-[85vh] sm:max-w-4xl sm:rounded-[2.5rem]">
+    <div class="premium-card !p-0 relative z-10 flex h-auto max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[2.5rem] border-t-8 border-indigo-600 shadow-2xl animate-slide-up sm:h-[85vh] sm:max-w-4xl sm:rounded-[2.5rem]">
       
       <!-- Sticky Header -->
-      <div class="border-b border-slate-50 bg-white/90 p-6 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/80 sm:p-8">
+      <div class="border-b border-slate-50 bg-white p-5 md:p-8 dark:border-gray-800 dark:bg-gray-900">
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-4">
-            <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
-               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+               <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
             </div>
             <div>
-              <h3 class="text-2xl font-black dark:text-white tracking-tight">{{ wallet?.name }}</h3>
-              <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1">{{ $t('wallet_detail.title') }} • Rp {{ wallet?.balance.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}</p>
+              <h3 class="text-xl md:text-2xl font-black dark:text-white tracking-tight">{{ wallet?.name }}</h3>
+              <p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-0.5 md:mt-1">{{ $t('wallet_detail.title') }} • {{ formatIDR(wallet?.balance || 0) }}</p>
             </div>
           </div>
-          <button @click="close" class="p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
-            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+          <button @click="close" class="p-2 md:p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
+            <svg class="w-5 h-5 md:w-6 md:h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
@@ -88,7 +88,7 @@
 
                 <div class="text-right">
                   <p :class="getItemColorClass(item)" class="text-lg font-black tracking-tighter tabular-nums">
-                    {{ getItemAmountPrefix(item) }}{{ Number(item.amount).toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}
+                    {{ getItemAmountPrefix(item) }}{{ formatIDR(item.amount) }}
                   </p>
                 </div>
              </div>
@@ -155,12 +155,12 @@
       </div>
 
       <!-- Sticky Footer / Pagination -->
-      <div v-if="viewMode === 'list' && totalPages > 1" class="border-t border-slate-100 bg-white/95 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90 sm:p-6">
+      <div v-if="viewMode === 'list' && totalPages > 1" class="border-t border-slate-100 bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] dark:border-gray-800 dark:bg-gray-900 sm:p-6">
          <div class="flex items-center justify-between">
             <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">{{ $t('transactions.pagination_info', { current: currentPage, total: totalPages }) }}</span>
             <div class="flex space-x-2">
-               <button @click="currentPage--" :disabled="currentPage === 1" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">Prev</button>
-               <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">Next</button>
+               <button @click="currentPage--" :disabled="currentPage === 1" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">{{ $t('common.prev') }}</button>
+               <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-5 py-2.5 bg-slate-50 dark:bg-gray-800 rounded-xl text-[10px] font-black uppercase disabled:opacity-30 transition-all border border-slate-100 dark:border-gray-700">{{ $t('common.next') }}</button>
             </div>
          </div>
       </div>
@@ -173,6 +173,9 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTransactionStore } from '../stores/useTransactionStore'
 import { useTransferStore } from '../stores/useTransferStore'
+import { useCurrency } from '../composables/useCurrency'
+
+const { formatIDR } = useCurrency()
 // Removed lucide-vue-next import
 
 const props = defineProps({

@@ -1,14 +1,17 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  <div v-if="isOpen" class="fixed inset-0 z-[1000] flex items-end justify-center p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" @click="close"></div>
     
     <!-- Modal Content -->
-    <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-in fade-in zoom-in duration-300 overflow-hidden shadow-2xl border-t-8 border-indigo-600">
+    <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-slide-up overflow-hidden shadow-2xl rounded-t-[2.5rem] sm:rounded-[2.5rem] border-t-8 border-indigo-600">
       <!-- Header -->
-      <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
-        <div>
-          <h3 class="text-xl font-black dark:text-white tracking-tight">{{ formattedDate }}</h3>
+      <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
+        <div class="flex-1">
+          <div class="flex items-center gap-3">
+            <h3 class="text-xl font-black dark:text-white tracking-tight">{{ formattedDate }}</h3>
+            <span v-if="isToday" class="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-black px-2.5 py-1 rounded-lg uppercase tracking-widest border border-indigo-200 dark:border-indigo-800/50">{{ $t('transactions.today') }}</span>
+          </div>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ $t('dashboard.calendar_modal_subtitle') }}</p>
         </div>
         <button @click="close" class="p-3 hover:bg-slate-100 dark:hover:bg-gray-800 rounded-2xl transition-all">
@@ -48,7 +51,7 @@
       </div>
 
       <!-- Action Footer -->
-      <div class="p-6 bg-slate-50/50 dark:bg-gray-900/50 flex items-center justify-between border-t border-slate-50 dark:border-gray-800 backdrop-blur-sm">
+      <div class="p-6 bg-slate-50 dark:bg-gray-900 flex items-center justify-between border-t border-slate-50 dark:border-gray-800">
         <button @click="close" class="px-8 py-3 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-all shadow-sm">{{ $t('dashboard.calendar_dismiss') }}</button>
         
         <button @click="handleQuickAdd" 
@@ -88,6 +91,14 @@ const formattedDate = computed(() => {
     month: 'long', 
     year: 'numeric' 
   })
+})
+
+const isToday = computed(() => {
+  if (!props.date) return false
+  const today = new Date()
+  return props.date.getDate() === today.getDate() &&
+         props.date.getMonth() === today.getMonth() &&
+         props.date.getFullYear() === today.getFullYear()
 })
 
 const close = () => {
