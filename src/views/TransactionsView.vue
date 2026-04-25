@@ -441,7 +441,9 @@ const nextMonth = () => { currentMonth.value = new Date(currentMonth.value.getFu
 
 // Actions
 const openAddModal = (date = null) => { 
-  selectedDate.value = date || new Date()
+  // Ensure date is a valid Date object, otherwise use current date
+  // This prevents MouseEvent from being treated as a date when called from @click
+  selectedDate.value = (date instanceof Date) ? date : new Date()
   editingTx.value = null
   showAddModal.value = true 
 }
