@@ -22,7 +22,7 @@ export function useInvestmentGuard() {
   })
 
   const cashBufferRequirement = computed(() => ef.averageMonthlyExpense.value || 0)
-  
+
   const hasCashBuffer = computed(() => {
     // Current cash must be at least 1 month expense
     return currentCash.value >= cashBufferRequirement.value
@@ -38,12 +38,12 @@ export function useInvestmentGuard() {
 
   const advice = computed(() => {
     if (guardStatus.value === 'SAFE') {
-      return 'Kondisi keuanganmu sangat solid. Kamu siap untuk mulai berinvestasi di instrumen berisiko.'
+      return 'guard.investment_safe_advice'
     }
     if (guardStatus.value === 'LOW_BUFFER') {
-      return 'Dana daruratmu aman, tapi kamu butuh cadangan kas ekstra sebelum memindahkan uang ke aset investasi.'
+      return 'guard.investment_low_buffer_advice'
     }
-    return 'Utamakan Dana Darurat dan kebebasan hutang konsumtif sebelum mulai berinvestasi.'
+    return 'guard.investment_danger_advice'
   })
 
   return {

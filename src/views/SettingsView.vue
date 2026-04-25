@@ -7,11 +7,11 @@
     @logout="handleLogout"
   >
     <!-- Header Area -->
-    <div class="mb-10">
-      <h2 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+    <div class="mb-8 md:mb-10 animate-slide-up px-1 md:px-0">
+      <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">
         {{ $t('settings.title') }}
       </h2>
-      <p class="text-sm text-slate-500 font-medium">{{ $t('settings.subtitle') }}</p>
+      <p class="text-xs md:text-sm text-slate-500 font-medium">{{ $t('settings.subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -151,7 +151,7 @@ onMounted(() => setTimeout(() => isLoading.value = false, 600))
 const router = useRouter()
 const { theme, setTheme } = useTheme()
 
-const userName = computed(() => authStore.user?.user_metadata?.full_name || 'User')
+const userName = computed(() => authStore.user?.user_metadata?.full_name || t('common.user'))
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
 </script>

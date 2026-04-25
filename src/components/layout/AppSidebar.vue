@@ -58,7 +58,8 @@ import {
   Tag,
   Sparkles,
   CreditCard,
-  LifeBuoy
+  LifeBuoy,
+  Camera
 } from 'lucide-vue-next'
 import AppAvatar from '../ui/AppAvatar.vue'
 
@@ -79,6 +80,7 @@ const navItems = [
   { to: '/budget', label: 'nav.budgets', icon: PieChart },
   { to: '/debt', label: 'nav.debt', icon: CreditCard },
   { to: '/emergency-fund', label: 'nav.emergency', icon: LifeBuoy },
+  // { to: '/import', label: 'nav.import', icon: Camera },
   { to: '/whats-new', label: 'nav.news', icon: Sparkles },
   { to: '/transfer', label: 'nav.transfer', icon: ArrowLeftRight },
   { to: '/settings', label: 'nav.settings', icon: Settings },

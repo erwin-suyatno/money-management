@@ -2,35 +2,74 @@
   <nav class="bottom-nav">
     <div class="bottom-nav__container">
       <router-link
-        v-for="item in navItems"
+        v-for="item in primaryNavItems"
         :key="item.to"
         :to="item.to"
         class="bottom-nav__item"
         active-class="bottom-nav__item--active"
       >
-        <component :is="item.icon" class="bottom-nav__icon" :size="24" />
+        <component :is="item.icon" class="bottom-nav__icon" :size="22" />
         <span class="bottom-nav__label">{{ $t(item.label) }}</span>
       </router-link>
+
+      <!-- More Menu Trigger -->
+      <button 
+        @click="isMenuOpen = true"
+        class="bottom-nav__item"
+        :class="{ 'bottom-nav__item--active': isMoreActive }"
+      >
+        <Menu class="bottom-nav__icon" :size="22" />
+        <span class="bottom-nav__label">{{ $t('common.all') }}</span>
+      </button>
+
+      <!-- Mobile Menu Bottom Sheet -->
+      <Teleport to="body">
+        <MobileMenuModal 
+          :is-open="isMenuOpen"
+          :user-name="authStore.user?.user_metadata?.full_name || $t('common.user')"
+          :user-email="authStore.user?.email"
+          @close="isMenuOpen = false"
+          @logout="handleLogout"
+        />
+      </Teleport>
     </div>
   </nav>
 </template>
-
 <script setup>
+import { ref, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { 
   LayoutDashboard, 
-  ArrowLeftRight, 
+  Wallet,
   PieChart, 
-  Settings,
-  History
+  History,
+  Menu
 } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/useAuthStore'
+import MobileMenuModal from './MobileMenuModal.vue'
 
-const navItems = [
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const isMenuOpen = ref(false)
+
+const primaryNavItems = [
   { to: '/dashboard', label: 'nav.dashboard', icon: LayoutDashboard },
   { to: '/transaction', label: 'nav.history', icon: History },
+  { to: '/wallet', label: 'nav.wallets', icon: Wallet },
   { to: '/budget', label: 'nav.budgets', icon: PieChart },
-  { to: '/transfer', label: 'nav.transfer', icon: ArrowLeftRight },
-  { to: '/settings', label: 'nav.settings', icon: Settings },
 ]
+
+// Determine if "More" menu should look active (if we are on a page not in primary nav)
+const isMoreActive = computed(() => {
+  const primaryPaths = primaryNavItems.map(item => item.to)
+  return !primaryPaths.includes(route.path)
+})
+
+const handleLogout = async () => {
+  await authStore.logout()
+  router.push('/login')
+}
 </script>
 
 <style scoped>
@@ -93,5 +132,16 @@ const navItems = [
 
 .bottom-nav__item--active .bottom-nav__icon {
   stroke-width: 2.5px;
+  transform: translateY(-2px);
+}
+
+.bottom-nav__item--active::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  width: 4px;
+  height: 4px;
+  background-color: var(--color-primary-600);
+  border-radius: 50%;
 }
 </style>

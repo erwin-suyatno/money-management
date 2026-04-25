@@ -1,17 +1,17 @@
 <template>
   <AppShell
     :is-authenticated="!!authStore.session"
-    :user-name="authStore.user?.user_metadata?.full_name || 'User'"
+    :user-name="authStore.user?.user_metadata?.full_name || $t('common.user')"
     :user-email="authStore.user?.email"
     :page-title="$t('transfer.title')"
     @logout="handleLogout"
   >
     <!-- Header Area -->
-    <div class="mb-8">
-      <h2 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+    <div class="mb-8 md:mb-10 animate-slide-up px-1 md:px-0">
+      <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">
         {{ $t('transfer.title') }}
       </h2>
-      <p class="text-sm text-slate-500 font-medium">{{ $t('transfer.modal_subtitle') }}</p>
+      <p class="text-xs md:text-sm text-slate-500 font-medium">{{ $t('transfer.modal_subtitle') }}</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">

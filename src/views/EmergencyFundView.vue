@@ -7,16 +7,18 @@
     @logout="handleLogout"
   >
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-10 px-1 md:px-0">
       <div class="animate-slide-up">
-        <h2 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Pos Keamanan (Emergency Fund)</h2>
-        <p class="text-sm text-slate-500 font-medium">Lindungi dirimu dari ketidakpastian finansial.</p>
+        <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">
+          {{ $t('emergency.title') }}
+        </h2>
+        <p class="text-xs md:text-sm text-slate-500 font-medium">{{ $t('emergency.subtitle') }}</p>
       </div>
 
       <div class="flex items-center gap-3 animate-slide-up">
-         <div class="px-4 py-2 bg-primary-50 dark:bg-primary-900/10 rounded-2xl flex items-center gap-2">
-            <span class="text-[10px] font-black uppercase text-primary-600 dark:text-primary-400">Level Multiplier:</span>
-            <span class="text-xs font-black text-slate-900 dark:text-white">{{ multiplier }}x Pengeluaran</span>
+         <div class="px-4 py-2.5 bg-primary-50 dark:bg-primary-900/10 rounded-2xl flex items-center gap-2 shadow-sm shadow-primary-500/5">
+            <span class="text-[9px] md:text-[10px] font-black uppercase text-primary-600 dark:text-primary-400">{{ $t('emergency.level_multiplier') }}</span>
+            <span class="text-xs font-black text-slate-900 dark:text-white">{{ multiplier }}x {{ $t('emergency.multiplier_desc') }}</span>
          </div>
       </div>
     </div>
@@ -26,18 +28,18 @@
        <AppCard class="lg:col-span-2 relative overflow-hidden group !p-10 border-slate-100 dark:border-gray-800 shadow-xl shadow-slate-200/50 dark:shadow-none">
           <div class="absolute -right-24 -top-24 w-64 h-64 bg-primary-600/5 rounded-full blur-3xl"></div>
           
-          <div class="flex flex-col md:flex-row items-center gap-12 relative z-10">
+          <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-12 relative z-10">
              <!-- Circular Progress -->
              
-             <div class="relative w-48 h-48 shrink-0">
+             <div class="relative w-40 h-40 md:w-48 md:h-48 shrink-0">
                 <svg class="w-full h-full transform -rotate-90">
                    <circle 
-                     cx="96" cy="96" r="88" 
+                     cx="50%" cy="50%" r="45%" 
                      class="stroke-slate-100 dark:stroke-gray-800" 
                      stroke-width="12" fill="transparent" 
                    />
                    <circle 
-                     cx="96" cy="96" r="88" 
+                     cx="50%" cy="50%" r="45%" 
                      class="stroke-primary-600 transition-all duration-1000 ease-out" 
                      stroke-width="12" fill="transparent"
                      stroke-linecap="round"
@@ -46,25 +48,25 @@
                    />
                 </svg>
                 <div class="absolute inset-0 flex flex-col items-center justify-center">
-                   <span class="text-4xl font-black text-slate-900 dark:text-white italic tabular-nums">{{ Math.round(progressPercentage) }}%</span>
-                   <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">Terpenuhi</span>
+                   <span class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white italic tabular-nums">{{ Math.round(progressPercentage) }}%</span>
+                   <span class="text-[9px] font-black uppercase tracking-widest text-slate-400">{{ $t('emergency.fulfilled') }}</span>
                 </div>
              </div>
 
-             <div class="flex-1 space-y-6">
+             <div class="flex-1 space-y-6 text-center lg:text-left">
                 <div>
-                   <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Target Dana Darurat</p>
-                   <h3 class="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">{{ formatIDR(targetAmount) }}</h3>
+                   <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">{{ $t('emergency.target') }}</p>
+                   <h3 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter">{{ formatIDR(targetAmount) }}</h3>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-gray-800">
+                <div class="grid grid-cols-2 gap-4 md:gap-6 pt-4 border-t border-slate-100 dark:border-gray-800">
                    <div>
-                      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Saldo Saat Ini</p>
-                      <p class="text-lg font-black dark:text-white tabular-nums">{{ formatIDR(currentBalance) }}</p>
+                      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{{ $t('emergency.current_balance') }}</p>
+                      <p class="text-base md:text-lg font-black dark:text-white tabular-nums">{{ formatIDR(currentBalance) }}</p>
                    </div>
                    <div>
-                      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">Kurang (Gap)</p>
-                      <p class="text-lg font-black text-rose-500 tabular-nums">{{ formatIDR(gapAmount) }}</p>
+                      <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-1">{{ $t('emergency.gap') }}</p>
+                      <p class="text-base md:text-lg font-black text-rose-500 tabular-nums">{{ formatIDR(gapAmount) }}</p>
                    </div>
                 </div>
              </div>
@@ -78,8 +80,8 @@
                 <Timer :size="24" />
              </div>
              <div>
-                <h4 class="text-sm font-black uppercase tracking-tight">Estimasi Waktu</h4>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kecepatan Menabung</p>
+                <h4 class="text-sm font-black uppercase tracking-tight">{{ $t('emergency.est_time') }}</h4>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{{ $t('emergency.saving_speed') }}</p>
              </div>
           </div>
 
@@ -88,21 +90,19 @@
                 <div class="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-400">
                    <CheckCircle :size="32" />
                 </div>
-                <h3 class="text-xl font-black mb-1">Target Tercapai!</h3>
-                <p class="text-xs text-slate-400 font-medium">Dana daruratmu sudah aman dan terjaga.</p>
+                <h3 class="text-xl font-black mb-1">{{ $t('emergency.target_reached') }}</h3>
+                <p class="text-xs text-slate-400 font-medium">{{ $t('emergency.reached_desc') }}</p>
              </div>
              <div v-else>
-                <h3 class="text-5xl font-black italic tracking-tighter text-primary-400 mb-2">
+                <h3 class="text-4xl md:text-5xl font-black italic tracking-tighter text-primary-400 mb-2">
                    {{ estimatedMonthsToGoal === null ? '∞' : estimatedMonthsToGoal }}
-                   <span class="text-sm font-black uppercase not-italic text-white">Bulan</span>
+                   <span class="text-sm font-black uppercase not-italic text-white">{{ $t('emergency.months') }}</span>
                 </h3>
                 <p v-if="estimatedMonthsToGoal === null" class="text-xs text-rose-400 font-medium leading-relaxed">
-                   Pengeluaranmu saat ini masih lebih besar dari pemasukan. Kurangi pengeluaran agar bisa mulai menabung.
+                   {{ $t('emergency.low_surplus_msg') }}
                 </p>
                 <p v-else class="text-xs text-slate-400 font-medium leading-relaxed">
-                   Berdasarkan rata-rata surplus bulananmu sebesar 
-                   <span class="text-white font-bold">{{ formatIDR(monthlySavingCapability) }}</span>, 
-                   kamu akan mencapai target dalam kurun waktu tersebut.
+                   {{ $t('emergency.reach_time_desc', { amount: formatIDR(monthlySavingCapability) }) }}
                 </p>
              </div>
           </div>
@@ -116,10 +116,9 @@
              <Calculator :size="20" />
           </div>
           <div>
-             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">Basis Perhitungan</h4>
+             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">{{ $t('emergency.calc_basis') }}</h4>
              <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                Target dihitung dari rata-rata pengeluaran bulananmu sebesar 
-                <span class="font-bold text-slate-900 dark:text-white">{{ formatIDR(averageMonthlyExpense) }}</span> dikali multiplier profilmu.
+                {{ $t('emergency.calc_desc', { amount: formatIDR(averageMonthlyExpense) }) }}
              </p>
           </div>
        </AppCard>
@@ -129,9 +128,9 @@
              <ShieldCheck :size="20" />
           </div>
           <div>
-             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">Keamanan Finansial</h4>
+             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">{{ $t('emergency.safety_title') }}</h4>
              <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                Dana darurat adalah prioritas nomor #1 sebelum kamu mulai berinvestasi di aset berisiko.
+                {{ $t('emergency.safety_desc') }}
              </p>
           </div>
        </AppCard>
@@ -141,9 +140,9 @@
              <AlertCircle :size="20" />
           </div>
           <div>
-             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">Kapan Digunakan?</h4>
+             <h4 class="text-sm font-black dark:text-white uppercase tracking-tight mb-1">{{ $t('emergency.usage_title') }}</h4>
              <p class="text-xs text-slate-500 leading-relaxed font-medium">
-                Hanya gunakan dana ini untuk keadaan mendesak: Kehilangan pekerjaan, sakit, atau perbaikan infrastruktur darurat.
+                {{ $t('emergency.usage_desc') }}
              </p>
           </div>
        </AppCard>

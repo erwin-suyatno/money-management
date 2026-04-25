@@ -1,23 +1,23 @@
 <template>
   <AppShell
     :is-authenticated="!!authStore.session"
-    :user-name="authStore.user?.user_metadata?.full_name || 'User'"
+    :user-name="authStore.user?.user_metadata?.full_name || $t('common.user')"
     :user-email="authStore.user?.email"
-    page-title="Apa yang Baru?"
+    :page-title="$t('news.page_title')"
     @logout="handleLogout"
   >
-    <div class="max-w-4xl mx-auto py-8">
+    <div class="max-w-4xl mx-auto py-6 md:py-8 px-1 md:px-0">
       <!-- Header -->
-      <div class="text-center mb-16 animate-slide-up">
-        <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4">
+      <div class="text-center mb-10 md:mb-16 animate-slide-up">
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-4">
            <Zap :size="14" class="fill-current" />
-           Versi Terbaru v1.2.0
+           {{ $t('news.latest_version') }} v2.0.0
         </div>
-        <h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4">
-          Menuju Keunggulan Finansial.
+        <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4 italic">
+          {{ $t('news.title') }}
         </h1>
-        <p class="text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
-          Kami terus berevolusi. Berikut adalah pembaruan fitur terbaru yang dirancang untuk membantu Anda menguasai uang Anda dengan lebih cerdas.
+        <p class="text-xs md:text-sm text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
+          {{ $t('news.subtitle') }}
         </p>
       </div>
 
@@ -68,10 +68,10 @@
 
       <!-- Footer Action -->
       <div class="mt-24 text-center pb-20">
-         <p class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Siap untuk mencoba?</p>
+         <p class="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-6">{{ $t('news.ready_msg') }}</p>
          <div class="flex items-center justify-center gap-4">
-            <AppButton variant="primary" size="lg" @click="router.push('/dashboard')" class="px-10">Ke Dashboard</AppButton>
-            <AppButton variant="secondary" size="lg" @click="router.push('/budget')" class="px-10">Lihat Anggaran</AppButton>
+            <AppButton variant="primary" size="lg" @click="router.push('/dashboard')" class="px-10">{{ $t('news.btn_dashboard') }}</AppButton>
+            <AppButton variant="secondary" size="lg" @click="router.push('/budget')" class="px-10">{{ $t('news.btn_budget') }}</AppButton>
          </div>
       </div>
     </div>
@@ -79,31 +79,49 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { 
   Zap, 
   PieChart, 
   MousePointer2, 
   Layers, 
   LayoutGrid, 
-  Sparkles 
+  Sparkles,
+  Smartphone
 } from 'lucide-vue-next'
 import { useAuthStore } from '../stores/useAuthStore'
 import AppShell from '../components/layout/AppShell.vue'
 import AppCard from '../components/ui/AppCard.vue'
 import AppButton from '../components/ui/AppButton.vue'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
 
-const updates = [
+const updates = computed(() => [
   {
-    title: 'Revamp UI & Antarmuka Premium',
+    title: t('news.mobile_title'),
+    date: '25 April 2026',
+    icon: Smartphone,
+    tags: ['UX', 'Mobile'],
+    colorClass: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20',
+    description: t('news.mobile_desc'),
+    highlights: [
+      t('news.mobile_highlight_1'),
+      t('news.mobile_highlight_2'),
+      t('news.mobile_highlight_3'),
+      t('news.mobile_highlight_4')
+    ]
+  },
+  {
+    title: t('news.revamp_title'),
     date: '19 April 2026',
     icon: Sparkles,
     tags: ['Visual', 'UX'],
     colorClass: 'bg-violet-50 text-violet-600 dark:bg-violet-900/20',
-    description: 'Kami telah merombak seluruh antarmuka aplikasi dengan estetika modern yang lebih bersih, menggunakan teknik Glassmorphism dan sistem warna kontras tinggi.',
+    description: t('news.revamp_desc'),
     highlights: [
       'Glassmorphism & Soft Shadows',
       'High-Contrast Light Mode',
@@ -112,12 +130,12 @@ const updates = [
     ]
   },
   {
-    title: 'Sistem Anggaran (Budgeting)',
+    title: t('news.budget_title'),
     date: '19 April 2026',
     icon: PieChart,
-    tags: ['Fitur Utama', 'Analitik'],
+    tags: [t('common.main_feature'), t('common.analytics')],
     colorClass: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20',
-    description: 'Kontrol finansial kini di tangan Anda. Tetapkan batas pengeluaran harian, mingguan, atau bulanan per kategori untuk menghindari pemborosan.',
+    description: t('news.budget_desc'),
     highlights: [
       'Visual Progress Bar Dinamis',
       'Alert Sistem Kesehatan Dana',
@@ -126,46 +144,23 @@ const updates = [
     ]
   },
   {
-    title: 'Visual Icon Selector',
+    title: t('news.icon_title'),
     date: '19 April 2026',
     icon: MousePointer2,
-    tags: ['UI/UX', 'Pembaruan'],
+    tags: ['UI/UX', t('common.update')],
     colorClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20',
-    description: 'Pengaturan kategori kini lebih visual. Pilih dari puluhan ikon profesional langsung dari antarmuka pemilih ikon baru.',
+    description: t('news.icon_desc'),
     highlights: [
       'Live Preview Ikon',
       'Grid Selection Terintegrasi',
       'Hex Color Display',
       'Dukungan Lucide Icons'
     ]
-  },
-  {
-    title: 'Arsitektur Komponen Modular',
-    date: '18 April 2026',
-    icon: Layers,
-    tags: ['Performa', 'Teknis'],
-    colorClass: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20',
-    description: 'Kami menulis ulang struktur kategori untuk performa yang lebih cepat dan pemeliharaan kode yang lebih baik.',
-    highlights: [
-      'Komponen Base Terfragmentasi',
-      'Lazy Loading Optimization',
-      'State Management Lebih Bersih',
-      'Fluid Interaction'
-    ]
   }
-]
+])
+
+// I'll add these specific keys to locales now or use fallbacks for now and add them in the next step.
+// Actually, I'll add them to the locales now.
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
 </script>
-
-<style scoped>
-.animate-slide-up {
-  animation: slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  opacity: 0;
-}
-
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-</style>

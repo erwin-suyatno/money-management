@@ -12,20 +12,20 @@
 
         <div class="space-y-2 flex-1">
           <h4 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight italic">
-            Aturan Cash Buffer
+            {{ $t('guard.investment_guard') }}
           </h4>
           <p class="text-sm text-slate-500 dark:text-gray-400 font-medium leading-relaxed">
-            {{ advice }} Kami menyarankan untuk memenuhi 
-            <span class="text-amber-600 dark:text-amber-400 font-bold">Dana Darurat</span> & 
-            <span class="text-amber-600 dark:text-amber-400 font-bold">Saldo Mengendap 1 Bulan</span> 
-            terlebih dahulu.
+            {{ $t(advice) }} {{ $t('guard.investment_advice_prefix') }} 
+            <span class="text-amber-600 dark:text-amber-400 font-bold">{{ $t('guard.investment_emergency_fund') }}</span> & 
+            <span class="text-amber-600 dark:text-amber-400 font-bold">{{ $t('guard.investment_cash_buffer') }}</span> 
+            {{ $t('guard.investment_advice_suffix') }}
           </p>
           
           <!-- Progress bars for requirements -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div>
               <div class="flex justify-between text-[10px] font-black uppercase mb-1">
-                <span class="text-slate-400">Status Dana Darurat</span>
+                <span class="text-slate-400">{{ $t('guard.investment_emergency_fund') }}</span>
                 <span :class="isEfReady ? 'text-emerald-500' : 'text-amber-500'">{{ ef.progressPercentage.value }}%</span>
               </div>
               <div class="h-1.5 w-full bg-slate-100 dark:bg-gray-800 rounded-full overflow-hidden">
@@ -37,7 +37,7 @@
             </div>
             <div>
                <div class="flex justify-between text-[10px] font-black uppercase mb-1">
-                <span class="text-slate-400">Cash Buffer (1 Bln Ekspektasi)</span>
+                <span class="text-slate-400">{{ $t('guard.investment_cash_buffer') }}</span>
                 <span :class="hasCashBuffer ? 'text-emerald-500' : 'text-amber-500'">
                   {{ formatIDR(currentCash) }} / {{ formatIDR(cashBufferRequirement) }}
                 </span>
@@ -59,7 +59,7 @@
           class="shrink-0 border-amber-200 dark:border-gray-800"
           @click="router.push('/emergency-fund')"
         >
-          Lihat Detail
+          {{ $t('common.view_details') }}
         </AppButton>
       </div>
     </AppCard>

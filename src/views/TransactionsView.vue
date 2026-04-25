@@ -7,33 +7,38 @@
     @logout="handleLogout"
   >
     <!-- Header Actions -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-      <div>
-        <h2 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-10 px-1 md:px-0">
+      <div class="animate-slide-up">
+        <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">
           {{ $t('transactions.title') }}
         </h2>
-        <p class="text-sm text-slate-500 font-medium">{{ $t('transactions.subtitle') }}</p>
+        <p class="text-xs md:text-sm text-slate-500 font-medium">{{ $t('transactions.subtitle') }}</p>
       </div>
 
-      <div class="flex items-center gap-2 w-full md:w-auto">
-        <div class="flex bg-slate-100 dark:bg-gray-800 p-1 rounded-xl shadow-inner flex-1 md:flex-none">
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+        <div class="flex bg-slate-100 dark:bg-gray-800 p-1.5 rounded-2xl shadow-inner w-full sm:w-auto">
           <button 
             @click="viewMode = 'list'"
-            class="flex-1 md:px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-            :class="viewMode === 'list' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm' : 'text-slate-400'"
+            class="flex-1 sm:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+            :class="viewMode === 'list' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-md' : 'text-slate-400'"
           >
             {{ $t('transactions.list_view') }}
           </button>
           <button 
             @click="viewMode = 'calendar'"
-            class="flex-1 md:px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-            :class="viewMode === 'calendar' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-sm' : 'text-slate-400'"
+            class="flex-1 sm:px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+            :class="viewMode === 'calendar' ? 'bg-white dark:bg-gray-700 text-primary-600 shadow-md' : 'text-slate-400'"
           >
             {{ $t('transactions.calendar_view') }}
           </button>
         </div>
         
-        <AppButton variant="primary" size="md" @click="openAddModal">
+        <AppButton 
+          variant="primary" 
+          size="md" 
+          class="w-full sm:w-auto !rounded-2xl shadow-xl shadow-primary-500/20" 
+          @click="openAddModal"
+        >
           <template #prefix><Plus :size="18" /></template>
           <span>{{ $t('common.add') }}</span>
         </AppButton>
@@ -41,10 +46,28 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Mobile Filter Toggle -->
+      <div class="lg:hidden w-full mb-2">
+        <AppButton 
+          variant="secondary" 
+          size="md" 
+          class="w-full !rounded-2xl border-slate-200 dark:border-gray-800" 
+          @click="showMobileFilters = !showMobileFilters"
+        >
+          <template #prefix><Search :size="18" /></template>
+          <span>{{ showMobileFilters ? $t('common.cancel') : $t('transactions.filter') }}</span>
+        </AppButton>
+      </div>
+
       <!-- Left Column: Filters & Quick Summary -->
-      <aside class="lg:col-span-4 space-y-6">
+      <aside :class="showMobileFilters ? 'block' : 'hidden lg:block'" class="lg:col-span-4 space-y-6">
         <AppCard>
-          <template #header><h4 class="text-xs font-black uppercase tracking-widest">{{ $t('transactions.filter') }}</h4></template>
+          <template #header>
+            <div class="flex items-center justify-between w-full">
+              <h4 class="text-xs font-black uppercase tracking-widest">{{ $t('transactions.filter') }}</h4>
+              <button v-if="showMobileFilters" @click="showMobileFilters = false" class="lg:hidden text-slate-400"><X :size="16" /></button>
+            </div>
+          </template>
           <div class="space-y-4">
             <AppInput 
               id="search" 
@@ -73,21 +96,21 @@
                 class="flex-1"
                 :class="{ '!bg-primary-600 !text-white': typeFilter === 'ALL' }"
                 @click="typeFilter = 'ALL'"
-              >Semua</AppButton>
+              >{{ $t('transactions.type_all') }}</AppButton>
               <AppButton 
                 variant="secondary" 
                 size="sm" 
                 class="flex-1"
                 :class="{ '!bg-primary-600 !text-white': typeFilter === 'EXPENSE' }"
                 @click="typeFilter = 'EXPENSE'"
-              >Keluar</AppButton>
+              >{{ $t('transactions.type_expense') }}</AppButton>
               <AppButton 
                 variant="secondary" 
                 size="sm" 
                 class="flex-1"
                 :class="{ '!bg-primary-600 !text-white': typeFilter === 'INCOME' }"
                 @click="typeFilter = 'INCOME'"
-              >Masuk</AppButton>
+              >{{ $t('transactions.type_income') }}</AppButton>
             </div>
           </div>
         </AppCard>
@@ -262,7 +285,8 @@ import {
   ChevronRight,
   Pencil,
   Trash2,
-  Tag
+  Tag,
+  X
 } from 'lucide-vue-next'
 
 import { useAuthStore } from '../stores/useAuthStore'
@@ -300,6 +324,7 @@ const startDate = ref('')
 const endDate = ref('')
 const showAddModal = ref(false)
 const showDayModal = ref(false)
+const showMobileFilters = ref(false)
 const editingTx = ref(null)
 const selectedDate = ref(null)
 const currentMonth = ref(new Date())
@@ -437,8 +462,11 @@ const confirmDelete = async (tx) => {
 }
 
 const selectedDateTransactions = computed(() => {
-  if (!selectedDate.value) return []
-  const d = selectedDate.value
+  const val = selectedDate.value
+  if (!val) return []
+  const d = new Date(val)
+  if (isNaN(d.getTime())) return []
+  
   return transactionStore.transactions.filter(tx => {
     const txDate = new Date(tx.created_at)
     return txDate.getFullYear() === d.getFullYear() &&

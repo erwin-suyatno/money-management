@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-[110] flex items-center justify-center p-4">
+  <div v-if="isOpen" class="fixed inset-0 z-[1000] flex items-end justify-center p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" @click="close"></div>
     
     <!-- Modal Content -->
-    <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-in fade-in zoom-in duration-300 overflow-hidden shadow-2xl border-t-8 border-indigo-600">
+    <div class="premium-card !p-0 w-full max-w-lg relative z-10 animate-slide-up overflow-hidden shadow-2xl rounded-t-[2.5rem] sm:rounded-[2.5rem] border-t-8 border-indigo-600">
       <!-- Header -->
-      <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-md">
+      <div class="p-8 border-b border-slate-50 dark:border-gray-800 flex items-center justify-between bg-white dark:bg-gray-900">
         <div>
           <h3 class="text-xl font-black dark:text-white tracking-tight">{{ $t('transfer.modal_title') }}</h3>
           <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{{ $t('transfer.modal_subtitle') }}</p>

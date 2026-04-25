@@ -82,6 +82,7 @@
   },
   "categories": {
     "title": "Master Data Kategori",
+    "form_category": "Kategori Pengeluaran",
     "subtitle": "ARSITEKTUR",
     "add": "Tambah Kategori",
     "empty": "Kategori tidak ditemukan",
@@ -99,7 +100,15 @@
     "edit_title": "Edit Kategori",
     "preview": "Pratinjau",
     "system_tag": "Sistem",
-    "delete_confirm": "Apakah Anda yakin ingin menghapus kategori \"{name}\"?"
+    "delete_confirm": "Apakah Anda yakin ingin menghapus kategori \"{name}\"?",
+    "income": "Pemasukan",
+    "expense": "Pengeluaran",
+    "saving": "Tabungan",
+    "investment": "Investasi",
+    "investasi": "Investasi",
+    "nabung": "Tabungan",
+    "uang masuk": "Pemasukan",
+    "uang keluar": "Pengeluaran"
   },
   "transactions": {
     "title": "Aktivitas",
@@ -136,6 +145,7 @@
     "form_note": "Catatan",
     "syncing": "Sinkronisasi...",
     "commit_btn": "Catat Transaksi",
+    "empty": "Ruang Kosong",
     "empty_title": "Ruang Kosong",
     "empty_subtitle": "Tidak ada catatan ditemukan untuk filter ini",
     "table_date": "Kronika",
@@ -155,7 +165,10 @@
     "delete_btn": "Hapus Transaksi",
     "delete_confirm": "Apakah Anda yakin ingin menghapus transaksi ini?",
     "delete_warning": "Apakah Anda yakin ingin menghapus transaksi ini? Tindakan ini tidak dapat dibatalkan dan akan mempengaruhi saldo dompet Anda.",
-    "form_validation_error": "Lengkapi data dompet, kategori, dan nominal (> 0)."
+    "form_validation_error": "Lengkapi data dompet, kategori, dan nominal (> 0).",
+    "type_all": "Semua",
+    "type_expense": "Keluar",
+    "type_income": "Masuk"
   },
   "transfer": {
     "title": "Transfer Dana",
@@ -171,9 +184,15 @@
     "update_btn": "Perbarui Transfer",
     "delete_btn": "Hapus Transfer",
     "error_same_wallet": "Dompet asal dan tujuan harus berbeda.",
-    "delete_confirm": "Apakah Anda yakin ingin menghapus transfer ini? Ini akan membatalkan mutasi dan memperbarui saldo kedua dompet."
+    "delete_confirm": "Apakah Anda yakin ingin menghapus transfer ini? Ini akan membatalkan mutasi dan memperbarui saldo kedua dompet.",
+    "send_funds": "Kirim Dana",
+    "select_wallet": "Pilih Dompet",
+    "amount": "Jumlah Transfer",
+    "note": "Catatan",
+    "btn_transfer": "Kirim Transfer Sekarang",
+    "empty": "Belum ada riwayat transfer"
   },
-  "debt": {
+  "debts": {
     "view_details": "Lihat Detail",
     "debt_name": "Nama Hutang / Cicilan",
     "principal": "Pokok Pinjaman",
@@ -183,6 +202,11 @@
     "paid_percentage": "{percentage}% Lunas",
     "tenure_months": "{months} Bln",
     "remaining_tenure": "Sisa {months} bln",
+    "list_desc": "Pantau dan kelola progres pelunasan kewajiban Anda.",
+    "dti_status_safe": "AMAN",
+    "dti_status_healthy": "SEHAT",
+    "dti_status_warning": "WASPADA",
+    "dti_status_critical": "BAHAYA",
     "almost_paid": "Hampir Lunas!",
     "add_debt": "Catat Hutang",
     "start_date": "Tanggal Mulai",
@@ -197,7 +221,45 @@
     "months_label": "Bulan",
     "select_category_optional": "Pilih Kategori (Opsional)",
     "save_btn": "Simpan Perubahan",
-    "add_btn": "Catat Hutang"
+    "add_btn": "Catat Hutang",
+    "full_title": "Manajemen Hutang",
+    "full_subtitle": "Pantau dan lunasi kewajiban finansialmu.",
+    "add": "Tambah Hutang",
+    "monthly_obligation": "Kewajiban Bulanan",
+    "contract_active": "Kontrak Aktif",
+    "dti_ratio": "Rasio DTI (Debt-to-Income)",
+    "financial_health": "Kesehatan Finansial",
+    "financial_advice": "Saran Finansial",
+    "tenure_progress": "Progres Tenor: {current}/{total} Bln",
+    "months": "Bln",
+    "per_month": "/ bln",
+    "empty": "Belum ada hutang tercatat",
+    "empty_subtitle": "Catat hutang atau cicilanmu untuk memantau progres pelunasan secara visual.",
+    "empty_btn": "Catat Hutang Pertama",
+    "delete_confirm": "Hapus catatan hutang {name}?"
+  },
+  "emergency": {
+    "title": "Pos Keamanan (Emergency Fund)",
+    "subtitle": "Lindungi dirimu dari ketidakpastian finansial.",
+    "level_multiplier": "Level Multiplier:",
+    "multiplier_desc": "x Pengeluaran",
+    "fulfilled": "Terpenuhi",
+    "target": "Target Dana Darurat",
+    "current_balance": "Saldo Saat Ini",
+    "gap": "Kurang (Gap)",
+    "est_time": "Estimasi Waktu",
+    "saving_speed": "Kecepatan Menabung",
+    "target_reached": "Target Tercapai!",
+    "reached_desc": "Dana daruratmu sudah aman dan terjaga.",
+    "months": "Bulan",
+    "low_surplus_msg": "Pengeluaranmu saat ini masih lebih besar dari pemasukan. Kurangi pengeluaran agar bisa mulai menabung.",
+    "reach_time_desc": "Berdasarkan rata-rata surplus bulananmu sebesar {amount}, kamu akan mencapai target dalam kurun waktu tersebut.",
+    "calc_basis": "Basis Perhitungan",
+    "calc_desc": "Target dihitung dari rata-rata pengeluaran bulananmu sebesar {amount} dikali multiplier profilmu.",
+    "safety_title": "Keamanan Finansial",
+    "safety_desc": "Dana darurat adalah prioritas nomor #1 sebelum kamu mulai berinvestasi di aset berisiko.",
+    "usage_title": "Kapan Digunakan?",
+    "usage_desc": "Hanya gunakan dana ini untuk keadaan mendesak: Kehilangan pekerjaan, sakit, atau perbaikan infrastruktur darurat."
   },
   "import": {
     "title": "Scan Struk Pintar",
@@ -209,7 +271,19 @@
     "result": "Hasil Pemindaian",
     "merchant": "Merchant",
     "total_amount": "Total Jumlah",
-    "file_label": "Berkas"
+    "file_label": "Berkas",
+    "powered_by": "PEMINDAI BERTENAGA TESSERACT OCR",
+    "tips_title": "Tips AI",
+    "tips_desc": "Pastikan foto struk memiliki pencahayaan yang cukup dan teks terbaca dengan jelas untuk akurasi terbaik.",
+    "info_speed_title": "Super Cepat",
+    "info_speed_desc": "AI mendeteksi total dan merchant dalam hitungan detik.",
+    "info_secure_title": "Aman & Privat",
+    "info_secure_desc": "Data struk Anda diproses dengan enkripsi standar militer.",
+    "info_format_title": "Multi Format",
+    "info_format_desc": "Mendukung foto langsung dari kamera HP atau upload file gambar.",
+    "error_no_wallet": "Silakan buat dompet terlebih dahulu di halaman Dompet.",
+    "success_msg": "Transaksi berhasil disimpan ke Supabase!",
+    "error_save": "Gagal menyimpan transaksi: {error}"
   },
   "errors": {
     "404": {
@@ -243,6 +317,12 @@
     "status": "Status",
     "all_systems": "Seluruh sistem beroperasi.",
     "created_by": "Dibuat oleh",
+    "user": "Pengguna",
+    "optional": "Opsional",
+    "all": "Semua",
+    "main_feature": "Fitur Utama",
+    "analytics": "Analitik",
+    "update": "Pembaruan",
     "days": {
       "sun": "Min",
       "mon": "Sen",
@@ -251,7 +331,8 @@
       "thu": "Kam",
       "fri": "Jum",
       "sat": "Sab"
-    }
+    },
+    "view_details": "Lihat Detail"
   },
   "analytics": {
     "cash_flow": "Arus Kas",
@@ -263,6 +344,7 @@
     "title": "Anggaran",
     "add": "Atur Anggaran",
     "edit": "Ubah Anggaran",
+    "empty": "Belum Ada Anggaran",
     "empty_title": "Belum Ada Anggaran",
     "empty_subtitle": "Buat anggaran pertamamu untuk mengontrol pengeluaran dengan lebih baik.",
     "monthly_total": "Total Budget Bulanan",
@@ -295,7 +377,9 @@
     "exceeded_msg": "Melebihi batas sebesar Rp {amount}",
     "empty_btn": "Buat Anggaran Pertama",
     "save_error": "Ops! Terjadi kesalahan saat menyimpan anggaran.",
-    "delete_confirm": "Hapus anggaran untuk kategori {name}?"
+    "delete_confirm": "Hapus anggaran untuk kategori {name}?",
+    "period": "Periode",
+    "management": "Manajemen Anggaran"
   },
   "health": {
     "title": "Kesehatan Finansial",
@@ -349,5 +433,39 @@
     "security": "Keamanan & Akun",
     "delete_account": "Hapus Akun",
     "delete_desc": "Tindakan ini permanen"
+  },
+  "news": {
+    "page_title": "Apa yang Baru?",
+    "latest_version": "Versi Terbaru",
+    "title": "Menuju Keunggulan Finansial.",
+    "subtitle": "Kami terus berevolusi. Berikut adalah pembaruan fitur terbaru yang dirancang untuk membantu Anda menguasai uang Anda dengan lebih cerdas.",
+    "ready_msg": "Siap untuk mencoba?",
+    "btn_dashboard": "Ke Dashboard",
+    "btn_budget": "Lihat Anggaran",
+    "revamp_title": "Revamp UI & Antarmuka Premium",
+    "revamp_desc": "Kami telah merombak seluruh antarmuka aplikasi dengan estetika modern yang lebih bersih, menggunakan teknik Glassmorphism dan sistem warna kontras tinggi.",
+    "budget_title": "Sistem Anggaran (Budgeting)",
+    "budget_desc": "Kontrol finansial kini di tangan Anda. Tetapkan batas pengeluaran harian, mingguan, atau bulanan per kategori untuk menghindari pemborosan.",
+    "icon_title": "Visual Icon Selector",
+    "icon_desc": "Pengaturan kategori kini lebih visual. Pilih dari puluhan ikon profesional langsung dari antarmuka pemilih ikon baru.",
+    "mobile_title": "UX Mobile & Sheet Premium",
+    "mobile_desc": "Redesain total interaksi mobile dengan bottom sheet premium, animasi halus, dan tata letak yang dioptimalkan untuk pengalaman aplikasi yang sesungguhnya.",
+    "mobile_highlight_1": "Modal Bottom Sheet Premium",
+    "mobile_highlight_2": "Animasi Slide-up yang Halus",
+    "mobile_highlight_3": "Grid Kategori Responsif",
+    "mobile_highlight_4": "Tema Kontras Tinggi Solid"
+  },
+  "guard": {
+    "investment_guard": "Perisai Investasi",
+    "investment_advice_prefix": "Kami menyarankan untuk memenuhi ",
+    "investment_emergency_fund": "Dana Darurat",
+    "investment_cash_buffer": "Saldo Mengendap 1 Bulan",
+    "investment_advice_suffix": "terlebih dahulu.",
+    "investment_safe_advice": "Kondisi keuanganmu sangat solid. Kamu siap untuk mulai berinvestasi di instrumen berisiko.",
+    "investment_low_buffer_advice": "Dana daruratmu aman, tapi kamu butuh cadangan kas ekstra sebelum memindahkan uang ke aset investasi.",
+    "investment_danger_advice": "Prioritaskan Dana Darurat dan kebebasan hutang konsumtif sebelum mulai berinvestasi.",
+    "status_ready": "Siap Berinvestasi",
+    "status_cautious": "Waspada",
+    "status_stop": "Prioritaskan Dana Darurat"
   }
 }

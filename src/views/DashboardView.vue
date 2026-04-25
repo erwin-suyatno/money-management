@@ -1,7 +1,7 @@
 <template>
   <AppShell
     :is-authenticated="!!authStore.session"
-    :user-name="authStore.user?.user_metadata?.full_name || 'User'"
+    :user-name="authStore.user?.user_metadata?.full_name || $t('common.user')"
     :user-email="authStore.user?.email"
     :page-title="$t('dashboard.title')"
     @logout="handleLogout"
@@ -15,47 +15,53 @@
        <InvestmentGuardAlert />
     </div>
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
-      <div>
-        <h2 class="text-3xl font-black tracking-tighter text-slate-900 dark:text-white italic">
-           {{ $t('welcome.greeting', { name: authStore.user?.user_metadata?.full_name?.split(' ')[0] || 'User' }) }}
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-10 px-1 md:px-0">
+      <div class="animate-slide-up">
+        <h2 class="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white italic">
+           {{ $t('welcome.greeting', { name: authStore.user?.user_metadata?.full_name?.split(' ')[0] || $t('common.user') }) }}
         </h2>
-        <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-400 mt-1">{{ todayDate }}</p>
+        <p class="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mt-1.5">{{ todayDate }}</p>
       </div>
       
-      <div class="flex items-center gap-3 w-full md:w-auto">
+      <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
         <select 
           v-model="selectedRange" 
-          class="flex-1 md:w-48 bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-800 rounded-2xl px-5 py-3 text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-primary-500 outline-none"
+          class="w-full sm:w-40 md:w-48 bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-800 rounded-2xl px-5 py-3 text-[10px] md:text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
         >
           <option value="7d">{{ $t('dashboard.range_7d') }}</option>
           <option value="30d">{{ $t('dashboard.range_30d') }}</option>
           <option value="year">{{ $t('dashboard.range_year') }}</option>
         </select>
         
-        <AppButton variant="primary" size="md" class="!rounded-2xl shadow-xl shadow-primary-500/20" @click="showAddModal = true">
+        <AppButton 
+          variant="primary" 
+          size="md" 
+          class="w-full sm:w-auto !rounded-2xl shadow-xl shadow-primary-500/20" 
+          @click="showAddModal = true"
+        >
           <template #prefix><Plus :size="18" /></template>
-          {{ $t('actions.transaction') }}
+          <span>{{ $t('actions.transaction') }}</span>
         </AppButton>
       </div>
     </div>
 
     <!-- Tab Switching -->
-    <div class="flex border-b border-slate-100 dark:border-gray-800 mb-10 overflow-x-auto scrollbar-hide">
+    <div class="flex border-b border-slate-100 dark:border-gray-800 mb-8 md:mb-10 overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
       <button 
         v-for="tab in tabs" 
         :key="tab.id"
         @click="activeTab = tab.id"
-        class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap"
+        class="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap"
         :class="activeTab === tab.id ? 'text-primary-600' : 'text-slate-400 hover:text-slate-600'"
       >
-        <div class="flex items-center gap-3">
-          <component :is="tab.icon" :size="16" />
+        <div class="flex items-center gap-2.5 md:gap-3">
+          <component :is="tab.icon" :size="14" class="md:hidden" />
+          <component :is="tab.icon" :size="16" class="hidden md:block" />
           {{ $t(tab.key) }}
         </div>
         <div 
           v-if="activeTab === tab.id" 
-          class="absolute bottom-0 left-0 right-0 h-1 bg-primary-600 rounded-t-full scale-x-75"
+          class="absolute bottom-0 left-4 right-4 h-1 bg-primary-600 rounded-t-full"
         ></div>
       </button>
     </div>

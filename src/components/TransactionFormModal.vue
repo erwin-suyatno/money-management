@@ -1,12 +1,12 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-[110] flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
+  <div v-if="isOpen" class="fixed inset-0 z-[1000] flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-slate-700/60 backdrop-blur-md" @click="close"></div>
     
     <!-- Modal Content -->
-    <div class="premium-card !p-0 relative z-10 flex h-[100dvh] w-full max-h-[100dvh] flex-col overflow-hidden rounded-t-[2rem] border-t-8 border-blue-600 shadow-2xl animate-in fade-in zoom-in duration-300 sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:max-w-lg sm:rounded-[2rem]">
+    <div class="premium-card !p-0 relative z-10 flex h-auto max-h-[92dvh] w-full flex-col overflow-hidden rounded-t-[2.5rem] border-t-8 border-blue-600 shadow-2xl animate-slide-up sm:max-h-[calc(100dvh-4rem)] sm:max-w-lg sm:rounded-[2.5rem]">
       <!-- Header -->
-      <div class="border-b border-slate-50 bg-white/90 p-5 backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/80 sm:p-8">
+      <div class="sticky top-0 z-20 border-b border-slate-50 bg-white p-5 dark:border-gray-800 dark:bg-gray-900 sm:p-8">
         <div class="flex items-center justify-between">
         <div>
           <h3 class="text-xl font-black dark:text-white tracking-tight">{{ isEdit ? $t('transactions.edit_title') : $t('transactions.post_title') }}</h3>
@@ -21,8 +21,8 @@
       </div>
 
       <!-- Form Body -->
-      <form @submit.prevent="handleSubmit" class="flex min-h-0 flex-1 flex-col">
-        <div class="min-h-0 flex-1 space-y-6 overflow-y-auto p-5 sm:p-8">
+      <form @submit.prevent="handleSubmit" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div class="custom-scrollbar min-h-0 flex-1 space-y-8 overflow-y-auto p-5 pb-10 sm:p-8">
         <!-- Date Selection -->
         <div class="flex items-center justify-between bg-slate-50 dark:bg-gray-900/50 p-4 rounded-2xl border border-slate-100 dark:border-gray-800">
            <div class="flex items-center space-x-3 w-full">
@@ -58,18 +58,18 @@
         <div class="grid grid-cols-1 gap-6">
           <!-- Category Selection -->
           <div>
-            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_category') }}</label>
-            <div class="grid grid-cols-4 gap-3">
+            <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-4 ml-2">{{ $t('transactions.form_category') }}</label>
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
               <button v-for="cat in filteredCategories" :key="cat.id"
                       type="button"
                       @click="selectedCategory = cat.id"
                       :class="selectedCategory === cat.id ? 'ring-2 ring-indigo-500 bg-indigo-50 dark:bg-indigo-900/30' : 'bg-slate-50 dark:bg-gray-900'"
-                      class="p-4 rounded-3xl transition-all flex flex-col items-center justify-center space-y-2 group">
+                      class="p-3 sm:p-4 rounded-3xl transition-all flex flex-col items-center justify-center space-y-2 group min-h-[90px]">
                  <div :style="{ backgroundColor: selectedCategory === cat.id ? cat.color : '#94a3b8' }" 
                       class="w-10 h-10 rounded-2xl flex items-center justify-center text-white shadow-sm transition-transform group-active:scale-90">
                     <component :is="categoryStore.resolveIcon(cat.icon)" class="w-5 h-5" />
                  </div>
-                 <span class="w-full text-center text-xs font-bold leading-tight wrap-break-word dark:text-slate-200">{{ getCategoryDisplayName(cat) }}</span>
+                 <span class="w-full text-center text-[10px] sm:text-xs font-bold leading-tight line-clamp-2 dark:text-slate-200">{{ getCategoryDisplayName(cat) }}</span>
               </button>
             </div>
             <p v-if="filteredCategories.length === 0" class="text-center py-4 text-[10px] font-bold text-slate-400 italic">{{ $t('transactions.empty_categories') }}</p>
@@ -98,13 +98,13 @@
           <div>
             <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-3 ml-2">{{ $t('transactions.form_note') }}</label>
             <input v-model="description" type="text" :placeholder="$t('transactions.form_note_placeholder')" 
-                   class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all">
+                   class="w-full bg-slate-50 dark:bg-gray-900 border-2 border-transparent focus:border-blue-500/20 rounded-3xl px-6 py-5 focus:ring-0 dark:text-white font-bold transition-all mb-4">
           </div>
         </div>
         </div>
 
         <!-- Actions -->
-        <div class="sticky bottom-0 border-t border-slate-100 bg-white/95 p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-gray-800 dark:bg-gray-900/90 sm:p-8 sm:pt-6">
+        <div class="sticky bottom-0 border-t border-slate-100 bg-white p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] dark:border-gray-800 dark:bg-gray-900 sm:p-8 sm:pt-6">
           <div class="flex flex-col space-y-3">
           <button type="submit" 
                   :disabled="transactionStore.loading || walletStore.wallets.length === 0" 

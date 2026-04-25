@@ -1,21 +1,26 @@
 <template>
   <AppShell
     :is-authenticated="!!authStore.session"
-    :user-name="authStore.user?.user_metadata?.full_name || 'User'"
+    :user-name="authStore.user?.user_metadata?.full_name || $t('common.user')"
     :user-email="authStore.user?.email"
     :page-title="$t('wallets.title')"
     @logout="handleLogout"
   >
     <!-- Header Area -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-      <div>
-        <h2 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-10 px-1 md:px-0">
+      <div class="animate-slide-up">
+        <h2 class="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1">
           {{ $t('wallets.title') }}
         </h2>
-        <p class="text-sm text-slate-500 font-medium">{{ $t('wallets.balance') }}: {{ formatIDR(totalBalance) }}</p>
+        <p class="text-xs md:text-sm text-slate-500 font-medium">{{ $t('wallets.balance') }}: {{ formatIDR(totalBalance) }}</p>
       </div>
 
-      <AppButton variant="primary" size="md" @click="showAddModal = true">
+      <AppButton 
+        variant="primary" 
+        size="md" 
+        class="w-full md:w-auto !rounded-2xl shadow-xl shadow-primary-500/20"
+        @click="showAddModal = true"
+      >
         <template #prefix><Plus :size="18" /></template>
         <span>{{ $t('wallets.add') }}</span>
       </AppButton>
