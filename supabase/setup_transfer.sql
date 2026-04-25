@@ -17,17 +17,25 @@ CREATE POLICY "Users can view their own transfers"
 ON public.transfers FOR SELECT 
 USING (auth.uid() = created_by);
 
--- 0.2 Policy: Users can insert their own transfers
+-- 0.2 Policy: Users can insert their own transfers (Cek kepemilikan dompet asal & tujuan)
 DROP POLICY IF EXISTS "Users can insert their own transfers" ON public.transfers;
 CREATE POLICY "Users can insert their own transfers" 
 ON public.transfers FOR INSERT 
-WITH CHECK (auth.uid() = created_by);
+WITH CHECK (
+    auth.uid() = created_by AND 
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = from_wallet_id AND user_id = auth.uid()) AND
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = to_wallet_id AND user_id = auth.uid())
+);
 
--- 1. Tambahkan policy UPDATE (Agar user bisa mengedit transfer mereka sendiri)
+-- 1. Tambahkan policy UPDATE (Agar user bisa mengedit transfer mereka sendiri + Cek kepemilikan wallet)
 DROP POLICY IF EXISTS "Users can update their own transfers" ON public.transfers;
 CREATE POLICY "Users can update their own transfers" 
 ON public.transfers FOR UPDATE 
-USING (auth.uid() = created_by);
+USING (auth.uid() = created_by)
+WITH CHECK (
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = from_wallet_id AND user_id = auth.uid()) AND
+    EXISTS (SELECT 1 FROM public.wallets WHERE id = to_wallet_id AND user_id = auth.uid())
+);
 
 -- 2. Tambahkan/Pastikan policy DELETE (Agar user bisa menghapus transfer mereka sendiri)
 DROP POLICY IF EXISTS "Users can delete their own transfers" ON public.transfers;

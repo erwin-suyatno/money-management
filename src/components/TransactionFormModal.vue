@@ -131,6 +131,7 @@ import { useWalletStore } from '../stores/useWalletStore'
 import { useTransactionStore } from '../stores/useTransactionStore'
 import { useCategoryStore } from '../stores/useCategoryStore'
 import { useI18n } from 'vue-i18n'
+import { useToastStore } from '../stores/useToastStore'
 
 const props = defineProps({
   isOpen: Boolean,
@@ -150,6 +151,7 @@ const { t, locale } = useI18n()
 const walletStore = useWalletStore()
 const transactionStore = useTransactionStore()
 const categoryStore = useCategoryStore()
+const toastStore = useToastStore()
 const TX_TYPES = {
   INCOME: 'INCOME',
   EXPENSE: 'EXPENSE'
@@ -259,7 +261,7 @@ const close = () => {
 
 const handleSubmit = async () => {
   if (!selectedWallet.value || !selectedCategory.value || amount.value <= 0) {
-    alert(t('transactions.form_validation_error'))
+    toastStore.danger(t('transactions.form_validation_error'))
     return
   }
 

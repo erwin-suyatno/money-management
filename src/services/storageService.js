@@ -19,10 +19,15 @@ export const storageService = {
   },
 
   async getReceiptUrl(path) {
-    const { data } = supabase.storage
+    const { data, error } = await supabase.storage
       .from('imports')
-      .getPublicUrl(path)
+      .createSignedUrl(path, 600) // 10 minutes expiry
     
-    return data.publicUrl
+    if (error) {
+      console.error('Error getting signed URL:', error.message)
+      throw error
+    }
+    
+    return data.signedUrl
   }
 }

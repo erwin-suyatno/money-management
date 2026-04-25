@@ -2,14 +2,16 @@ import { ref } from 'vue'
 import { createWorker } from 'tesseract.js'
 
 export function useOCR() {
-  const isProcessing = ref(false)
+  const scanning = ref(false)
   const progress = ref(0)
   const error = ref(null)
+  const ocrResult = ref(null)
 
-  const scanImage = async (imageSource) => {
-    isProcessing.value = true
+  const scanReceipt = async (imageSource) => {
+    scanning.value = true
     progress.value = 0
     error.value = null
+    ocrResult.value = null
 
     try {
       const worker = await createWorker('ind+eng', 1, {
@@ -23,22 +25,22 @@ export function useOCR() {
       const { data: { text } } = await worker.recognize(imageSource)
       await worker.terminate()
 
-      return parseText(text)
+      const result = parseText(text)
+      ocrResult.value = result
+      return result
     } catch (err) {
       error.value = err.message
       console.error('OCR Error:', err)
       throw err
     } finally {
-      isProcessing.value = false
+      scanning.value = false
     }
   }
 
   const parseText = (text) => {
-    // Basic parsing logic for receipts
-    // Look for currency patterns (Rp, IDR, etc.)
     const lines = text.split('\n')
     let merchant = 'Unknown Merchant'
-    let amount = 0
+    let total = 0
 
     // Try to find merchant (usually first non-empty line)
     for (const line of lines) {
@@ -49,16 +51,14 @@ export function useOCR() {
     }
 
     // Try to find total amount
-    // Patterns: Total, Rp, atau angka besar di akhir
     const amountRegex = /(?:total|jumlah|rp|idr)?\s*[:=]?\s*([\d.,]{3,})/i
     
     for (let i = lines.length - 1; i >= 0; i--) {
       const match = lines[i].match(amountRegex)
       if (match) {
-        // Clean up the match: remove dots/commas and parse
         const cleanAmount = match[1].replace(/[.,]/g, '')
         if (cleanAmount.length >= 3) {
-          amount = parseInt(cleanAmount)
+          total = parseInt(cleanAmount)
           break
         }
       }
@@ -66,15 +66,16 @@ export function useOCR() {
 
     return {
       merchant,
-      amount,
+      total,
       rawText: text
     }
   }
 
   return {
-    isProcessing,
+    scanning,
     progress,
     error,
-    scanImage
+    ocrResult,
+    scanReceipt
   }
 }

@@ -76,12 +76,14 @@
 import { ref, computed, watch } from 'vue'
 import { useBudgetStore } from '../../stores/useBudgetStore'
 import { useCategoryStore } from '../../stores/useCategoryStore'
+import { useToastStore } from '../../stores/useToastStore'
 import AppModal from '../ui/AppModal.vue'
 import AppInput from '../ui/AppInput.vue'
 import AppButton from '../ui/AppButton.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
+const toastStore = useToastStore()
 
 const props = defineProps({
   isOpen: Boolean,
@@ -141,8 +143,9 @@ const handleSubmit = async () => {
   
   if (success) {
     emit('success')
+    toastStore.success(isEdit.value ? t('budgets.update_success') : t('budgets.save_success'))
   } else {
-    alert(t('budgets.save_error') + ' ' + (budgetStore.error || ''))
+    toastStore.danger(t('budgets.save_error') + ' ' + (budgetStore.error || ''))
   }
 }
 </script>

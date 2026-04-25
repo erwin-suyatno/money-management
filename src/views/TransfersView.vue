@@ -153,11 +153,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { ArrowDown, ArrowRight, RotateCw, History } from 'lucide-vue-next'
 import { supabase } from '../services/supabase'
 
 import { useAuthStore } from '../stores/useAuthStore'
 import { useWalletStore } from '../stores/useWalletStore'
+import { useToastStore } from '../stores/useToastStore'
 import { useCurrency } from '../composables/useCurrency'
 import { useFormatDate } from '../composables/useFormatDate'
 
@@ -167,9 +169,11 @@ import AppButton from '../components/ui/AppButton.vue'
 import AppInput from '../components/ui/AppInput.vue'
 import AppSkeleton from '../components/ui/AppSkeleton.vue'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const walletStore = useWalletStore()
 const router = useRouter()
+const toastStore = useToastStore()
 const { formatIDR } = useCurrency()
 const { formatDate } = useFormatDate()
 
@@ -200,11 +204,11 @@ const fetchTransfers = async () => {
 
 const handleSubmit = async () => {
   if (form.value.from_wallet_id === form.value.to_wallet_id) {
-    alert(t('transfer.error_same_wallet'))
+    toastStore.danger(t('transfer.error_same_wallet'))
     return
   }
   if (form.value.amount <= 0) {
-    alert(t('transfer.error_amount'))
+    toastStore.danger(t('transfer.error_amount'))
     return
   }
 
@@ -231,8 +235,9 @@ const handleSubmit = async () => {
     // Refresh data
     await walletStore.fetchWallets()
     await fetchTransfers()
+    toastStore.success(t('transfer.success_msg'))
   } catch (error) {
-    alert(error.message)
+    toastStore.danger(error.message)
   } finally {
     loading.value = false
   }
@@ -244,7 +249,4 @@ onMounted(() => {
 })
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
-
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
 </script>

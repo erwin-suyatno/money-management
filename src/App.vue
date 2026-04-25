@@ -6,15 +6,19 @@
   
   <div v-else class="app-root">
     <router-view />
+    <AppToast :toasts="toastStore.toasts" />
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/useAuthStore'
+import { useToastStore } from './stores/useToastStore'
 import { useTheme } from './composables/useTheme'
+import AppToast from './components/ui/AppToast.vue'
 
 const authStore = useAuthStore()
+const toastStore = useToastStore()
 const { updateTheme } = useTheme()
 
 onMounted(async () => {

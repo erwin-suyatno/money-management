@@ -81,6 +81,7 @@
 import { ref, watch } from 'vue'
 import { useWalletStore } from '../stores/useWalletStore'
 import { useTransferStore } from '../stores/useTransferStore'
+import { useToastStore } from '../stores/useToastStore'
 import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
@@ -96,6 +97,7 @@ const emit = defineEmits(['close', 'success'])
 const { t } = useI18n()
 const walletStore = useWalletStore()
 const transferStore = useTransferStore()
+const toastStore = useToastStore()
 
 const fromWalletId = ref('')
 const toWalletId = ref('')
@@ -119,7 +121,7 @@ const close = () => {
 const handleSubmit = async () => {
   if (!fromWalletId.value || !toWalletId.value || !amount.value) return
   if (fromWalletId.value === toWalletId.value) {
-    alert(t('transfer.error_same_wallet'))
+    toastStore.danger(t('transfer.error_same_wallet'))
     return
   }
 

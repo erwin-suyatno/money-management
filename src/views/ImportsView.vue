@@ -164,6 +164,7 @@ import { useTransactionStore } from '../stores/useTransactionStore'
 import { useCategoryStore } from '../stores/useCategoryStore'
 import { useOCR } from '../composables/useOCR'
 import { useCurrency } from '../composables/useCurrency'
+import { useToastStore } from '../stores/useToastStore'
 
 import AppShell from '../components/layout/AppShell.vue'
 import AppCard from '../components/ui/AppCard.vue'
@@ -175,6 +176,7 @@ const walletStore = useWalletStore()
 const txStore = useTransactionStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
+const toastStore = useToastStore()
 const { formatIDR } = useCurrency()
 const { scanning, progress, ocrResult, scanReceipt } = useOCR()
 
@@ -225,7 +227,7 @@ const resetUpload = () => {
 
 const saveTransaction = async () => {
   if (!selectedWallet.value) {
-    alert(t('import.error_no_wallet'))
+    toastStore.danger(t('import.error_no_wallet'))
     return
   }
 
@@ -241,14 +243,14 @@ const saveTransaction = async () => {
     })
 
     if (success) {
-      alert(t('import.success_msg'))
+      toastStore.success(t('import.success_msg'))
       resetUpload()
       await walletStore.fetchWallets()
     } else {
-      alert(t('import.error_save', { error: txStore.error }))
+      toastStore.danger(t('import.error_save', { error: txStore.error }))
     }
   } catch (err) {
-    alert(t('import.error_save', { error: err.message }))
+    toastStore.danger(t('import.error_save', { error: err.message }))
   } finally {
     saving.value = false
   }
