@@ -23,6 +23,42 @@
 
       <!-- Menu Grid -->
       <div class="flex-1 overflow-y-auto p-6 bg-white dark:bg-gray-900">
+        <!-- Workspace Switcher Section -->
+        <div class="mb-8">
+          <div class="flex items-center justify-between mb-4 px-2">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $t('common.workspace') }}</span>
+            <div class="flex gap-1">
+              <div class="w-1 h-1 rounded-full bg-primary-600"></div>
+              <div class="w-1 h-1 rounded-full bg-primary-200"></div>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            <button 
+              v-for="ws in authStore.workspaces" 
+              :key="ws.id"
+              @click="authStore.activeWorkspaceId = ws.id"
+              class="flex-shrink-0 min-w-[140px] p-4 rounded-3xl border-2 transition-all duration-300 text-left"
+              :class="authStore.activeWorkspaceId === ws.id 
+                ? 'border-primary-600 bg-primary-50/50 dark:bg-primary-900/10' 
+                : 'border-slate-50 dark:border-gray-800 bg-white dark:bg-gray-900'"
+            >
+              <div class="flex flex-col gap-2">
+                <div 
+                  class="w-8 h-8 rounded-xl flex items-center justify-center text-sm font-black"
+                  :class="authStore.activeWorkspaceId === ws.id ? 'bg-primary-600 text-white' : 'bg-slate-100 dark:bg-gray-800 text-slate-400'"
+                >
+                  {{ ws.name.charAt(0) }}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[11px] font-black dark:text-white truncate">{{ ws.name }}</p>
+                  <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{{ ws.type }}</p>
+                </div>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <div class="grid grid-cols-3 gap-4 pb-8">
           <router-link
             v-for="item in menuItems"
@@ -75,10 +111,12 @@ import {
   Sparkles, 
   ArrowLeftRight, 
   Settings,
-  LogOut,
-  Camera
+  LogOut
 } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/useAuthStore'
 import AppAvatar from '../ui/AppAvatar.vue'
+
+const authStore = useAuthStore()
 
 defineProps({
   isOpen: Boolean,

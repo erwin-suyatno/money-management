@@ -23,6 +23,7 @@ ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name;
 CREATE TABLE IF NOT EXISTS public.categories (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE, -- NULL = System Default
+    workspace_id UUID REFERENCES public.workspaces(id) ON DELETE CASCADE,
     category_type_id UUID NOT NULL REFERENCES public.category_types(id),
     parent_id UUID REFERENCES public.categories(id) ON DELETE CASCADE, -- Sub-category
     name VARCHAR NOT NULL,
@@ -40,23 +41,21 @@ CREATE TABLE IF NOT EXISTS public.categories (
 -- Row Level Security
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 
--- Policy: View (Own + System)
-DROP POLICY IF EXISTS "Users can view global and own categories" ON public.categories;
-CREATE POLICY "Users can view global and own categories" 
-ON public.categories FOR SELECT 
-USING (user_id IS NULL OR auth.uid() = user_id);
+-- Workspace-Aware View Policy
+-- Memungkinkan akses ke kategori sistem (user_id IS NULL) ATAU milik user/workspace terkait
+CREATE POLICY "View categories" ON public.categories
+FOR SELECT USING (
+    user_id IS NULL OR 
+    user_id = auth.uid() OR
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
+);
 
--- Policy: Insert (Own only)
-DROP POLICY IF EXISTS "Users can create own categories" ON public.categories;
-CREATE POLICY "Users can create own categories" 
-ON public.categories FOR INSERT 
-WITH CHECK (auth.uid() = user_id);
-
--- Policy: Update/Delete (Own only)
-DROP POLICY IF EXISTS "Users can manage own categories" ON public.categories;
-CREATE POLICY "Users can manage own categories" 
-ON public.categories FOR ALL
-USING (auth.uid() = user_id);
+-- Workspace-Aware Manage Policy
+CREATE POLICY "Manage categories" ON public.categories
+FOR ALL USING (
+    user_id = auth.uid() OR
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid() AND m.role IN ('owner', 'admin'))
+);
 
 -- =========================================================================
 -- 3. INITIAL SEEDER (Standard Categories)

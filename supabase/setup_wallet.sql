@@ -4,28 +4,17 @@ CREATE TABLE public.wallets (
     name TEXT NOT NULL,
     balance NUMERIC DEFAULT 0 NOT NULL,
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    workspace_id UUID REFERENCES public.workspaces(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Mengaktifkan Row Level Security (RLS)
 ALTER TABLE public.wallets ENABLE ROW LEVEL SECURITY;
 
--- 1. Create Policy: Users can view their own wallets
-CREATE POLICY "Users can view their own wallets" 
-ON public.wallets FOR SELECT 
-USING (auth.uid() = user_id);
-
--- 2. Create Policy: Users can insert their own wallets
-CREATE POLICY "Users can insert their own wallets" 
-ON public.wallets FOR INSERT 
-WITH CHECK (auth.uid() = user_id);
-
--- 3. Create Policy: Users can update their own wallets
-CREATE POLICY "Users can update their own wallets" 
-ON public.wallets FOR UPDATE 
-USING (auth.uid() = user_id);
-
--- 4. Create Policy: Users can delete their own wallets
-CREATE POLICY "Users can delete their own wallets" 
-ON public.wallets FOR DELETE 
-USING (auth.uid() = user_id);
+-- Workspace-Aware Access Policy
+-- Memungkinkan akses jika user adalah pemilik data ATAU anggota workspace terkait
+CREATE POLICY "Access wallets" ON public.wallets
+FOR ALL USING (
+    user_id = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
+);

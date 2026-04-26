@@ -10,6 +10,11 @@ export const useAuthStore = defineStore('auth', {
     loading: true,
     error: null
   }),
+  getters: {
+    activeWorkspace: (state) => {
+      return state.workspaces.find(w => w.id === state.activeWorkspaceId) || null
+    }
+  },
   actions: {
     async initialize() {
       const { data: { session } } = await supabase.auth.getSession()

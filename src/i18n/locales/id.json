@@ -454,7 +454,13 @@
     "mobile_highlight_1": "Modal Bottom Sheet Premium",
     "mobile_highlight_2": "Animasi Slide-up yang Halus",
     "mobile_highlight_3": "Grid Kategori Responsif",
-    "mobile_highlight_4": "Tema Kontras Tinggi Solid"
+    "mobile_highlight_4": "Tema Kontras Tinggi Solid",
+    "workspace_title": "Fondasi Workspace & Kolaborasi",
+    "workspace_desc": "Arsitektur baru yang memungkinkan Anda mengelola keuangan pribadi dan grup secara terpisah dalam satu akun dengan isolasi data yang presisi.",
+    "workspace_highlight_1": "Sistem Multi-Workspace",
+    "workspace_highlight_2": "Isolasi Data Aman",
+    "workspace_highlight_3": "Peralihan Workspace Instan",
+    "workspace_highlight_4": "Siap untuk Fitur Grup"
   },
   "guard": {
     "investment_guard": "Perisai Investasi",

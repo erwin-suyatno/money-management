@@ -84,81 +84,93 @@ WHERE b.user_id = ws.owner_id AND ws.type = 'personal' AND b.workspace_id IS NUL
 
 -- 8. RLS PIVOT: Drop old policies and add workspace-aware policies
 
+-- 1. WORKSPACE_MEMBERS (The "Anchor" table - No recursion)
+DROP POLICY IF EXISTS "View members" ON public.workspace_members;
+DROP POLICY IF EXISTS "Access members" ON public.workspace_members;
+CREATE POLICY "members_select_policy" ON public.workspace_members
+FOR SELECT USING (user_id = auth.uid());
+
+-- 2. WORKSPACES (Depends on members)
+DROP POLICY IF EXISTS "View workspaces" ON public.workspaces;
+DROP POLICY IF EXISTS "Access workspaces" ON public.workspaces;
+CREATE POLICY "workspaces_select_policy" ON public.workspaces
+FOR SELECT USING (
+    owner_id = auth.uid() OR 
+    id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
+);
+
+CREATE POLICY "workspaces_owner_manage" ON public.workspaces
+FOR ALL USING (owner_id = auth.uid());
+
+-- 3. CORE TABLES (Wallets, Transactions, etc. with Fallback)
+
 -- WALLETS
 DROP POLICY IF EXISTS "Users can view their own wallets" ON public.wallets;
-DROP POLICY IF EXISTS "Users can insert their own wallets" ON public.wallets;
-DROP POLICY IF EXISTS "Users can update their own wallets" ON public.wallets;
-DROP POLICY IF EXISTS "Users can delete their own wallets" ON public.wallets;
-
-CREATE POLICY "Workspace access for wallets" ON public.wallets
+DROP POLICY IF EXISTS "Workspace access for wallets" ON public.wallets;
+DROP POLICY IF EXISTS "Access wallets" ON public.wallets;
+CREATE POLICY "Access wallets" ON public.wallets
 FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.wallets.workspace_id AND user_id = auth.uid())
+    user_id = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
 -- TRANSACTIONS
 DROP POLICY IF EXISTS "Users can view their own transactions" ON public.transactions;
-DROP POLICY IF EXISTS "Users can insert their own transactions" ON public.transactions;
-DROP POLICY IF EXISTS "Users can update their own transactions" ON public.transactions;
-DROP POLICY IF EXISTS "Users can delete their own transactions" ON public.transactions;
-
-CREATE POLICY "Workspace access for transactions" ON public.transactions
+DROP POLICY IF EXISTS "Workspace access for transactions" ON public.transactions;
+DROP POLICY IF EXISTS "Access transactions" ON public.transactions;
+CREATE POLICY "Access transactions" ON public.transactions
 FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.transactions.workspace_id AND user_id = auth.uid())
+    created_by = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
 -- TRANSFERS
 DROP POLICY IF EXISTS "Users can view their own transfers" ON public.transfers;
-DROP POLICY IF EXISTS "Users can insert their own transfers" ON public.transfers;
-DROP POLICY IF EXISTS "Users can update their own transfers" ON public.transfers;
-DROP POLICY IF EXISTS "Users can delete their own transfers" ON public.transfers;
-
-CREATE POLICY "Workspace access for transfers" ON public.transfers
+DROP POLICY IF EXISTS "Workspace access for transfers" ON public.transfers;
+DROP POLICY IF EXISTS "Access transfers" ON public.transfers;
+CREATE POLICY "Access transfers" ON public.transfers
 FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.transfers.workspace_id AND user_id = auth.uid())
+    created_by = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
 -- DEBTS
 DROP POLICY IF EXISTS "Users can view their own debts" ON public.debts;
-DROP POLICY IF EXISTS "Users can insert their own debts" ON public.debts;
-DROP POLICY IF EXISTS "Users can update their own debts" ON public.debts;
-DROP POLICY IF EXISTS "Users can delete their own debts" ON public.debts;
-
-CREATE POLICY "Workspace access for debts" ON public.debts
+DROP POLICY IF EXISTS "Workspace access for debts" ON public.debts;
+DROP POLICY IF EXISTS "Access debts" ON public.debts;
+CREATE POLICY "Access debts" ON public.debts 
 FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.debts.workspace_id AND user_id = auth.uid())
+    user_id = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
 -- BUDGETS
 DROP POLICY IF EXISTS "Users can view their own budgets" ON public.budgets;
-DROP POLICY IF EXISTS "Users can insert their own budgets" ON public.budgets;
-DROP POLICY IF EXISTS "Users can update their own budgets" ON public.budgets;
-DROP POLICY IF EXISTS "Users can delete their own budgets" ON public.budgets;
-
-CREATE POLICY "Workspace access for budgets" ON public.budgets
+DROP POLICY IF EXISTS "Workspace access for budgets" ON public.budgets;
+DROP POLICY IF EXISTS "Access budgets" ON public.budgets;
+CREATE POLICY "Access budgets" ON public.budgets 
 FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.budgets.workspace_id AND user_id = auth.uid())
+    user_id = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
 -- CATEGORIES (Allow workspace-specific OR system categories)
 DROP POLICY IF EXISTS "Users can view their own categories" ON public.categories;
-DROP POLICY IF EXISTS "Users can insert their own categories" ON public.categories;
-DROP POLICY IF EXISTS "Users can update their own categories" ON public.categories;
-DROP POLICY IF EXISTS "Users can delete their own categories" ON public.categories;
-DROP POLICY IF EXISTS "Users can view system categories" ON public.categories;
+DROP POLICY IF EXISTS "View categories" ON public.categories;
+DROP POLICY IF EXISTS "Manage workspace categories" ON public.categories;
+DROP POLICY IF EXISTS "Manage categories" ON public.categories;
 
 CREATE POLICY "View categories" ON public.categories
 FOR SELECT USING (
     user_id IS NULL OR 
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = public.categories.workspace_id AND user_id = auth.uid())
+    user_id = auth.uid() OR
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
 
-CREATE POLICY "Manage workspace categories" ON public.categories
-FOR INSERT WITH CHECK (
-    EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = workspace_id AND user_id = auth.uid() AND role IN ('owner', 'admin'))
+CREATE POLICY "Manage categories" ON public.categories
+FOR ALL USING (
+    user_id = auth.uid() OR
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid() AND m.role IN ('owner', 'admin'))
 );
-
--- WORKSPACES & MEMBERS (Basic Access)
-CREATE POLICY "View members" ON public.workspace_members FOR SELECT USING (user_id = auth.uid() OR EXISTS (SELECT 1 FROM public.workspace_members m WHERE m.workspace_id = workspace_id AND m.user_id = auth.uid()));
-CREATE POLICY "View workspaces" ON public.workspaces FOR SELECT USING (EXISTS (SELECT 1 FROM public.workspace_members WHERE workspace_id = id AND user_id = auth.uid()));
 
 COMMIT;

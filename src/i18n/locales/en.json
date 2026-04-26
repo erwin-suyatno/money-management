@@ -454,7 +454,13 @@
     "mobile_highlight_1": "Premium Bottom Sheet Modals",
     "mobile_highlight_2": "Smooth Slide-up Animations",
     "mobile_highlight_3": "Responsive Category Grids",
-    "mobile_highlight_4": "Solid High-Contrast Themes"
+    "mobile_highlight_4": "Solid High-Contrast Themes",
+    "workspace_title": "Workspace Foundation & Collaboration",
+    "workspace_desc": "A new architecture that allows you to manage personal and group finances separately within a single account with precise data isolation.",
+    "workspace_highlight_1": "Multi-Workspace System",
+    "workspace_highlight_2": "Secure Data Isolation",
+    "workspace_highlight_3": "Instant Workspace Switching",
+    "workspace_highlight_4": "Ready for Group Features"
   },
   "guard": {
     "investment_guard": "Investment Guard",
