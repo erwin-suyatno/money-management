@@ -14,6 +14,13 @@ export const useTransferStore = defineStore('transfer', {
       this.loading = true
       this.error = null
       
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.transfers = []
+        this.loading = false
+        return
+      }
+
       const { data, error } = await supabase
         .from('transfers')
         .select(`
@@ -21,6 +28,7 @@ export const useTransferStore = defineStore('transfer', {
           from_wallet:from_wallet_id (name),
           to_wallet:to_wallet_id (name)
         `)
+        .eq('workspace_id', authStore.activeWorkspaceId)
         .order('created_at', { ascending: false })
         
       if (error) {
@@ -37,7 +45,7 @@ export const useTransferStore = defineStore('transfer', {
       this.error = null
       
       const authStore = useAuthStore()
-      if (!authStore.user) return false
+      if (!authStore.user || !authStore.activeWorkspaceId) return false
 
       if (from_wallet_id === to_wallet_id) {
          this.error = "Cannot transfer to the same wallet"
@@ -58,7 +66,8 @@ export const useTransferStore = defineStore('transfer', {
             to_wallet_id, 
             amount, 
             description,
-            created_by: authStore.user.id
+            created_by: authStore.user.id,
+            workspace_id: authStore.activeWorkspaceId
         }])
         .select(`
           *,

@@ -91,6 +91,13 @@ export const useCategoryStore = defineStore('category', {
       this.loading = true
       this.error = null
 
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.categories = []
+        this.loading = false
+        return
+      }
+
       try {
         // Fetch Types first
         const { data: types, error: typesError } = await supabase
@@ -101,7 +108,7 @@ export const useCategoryStore = defineStore('category', {
         if (typesError) throw typesError
         this.types = types
 
-        // Fetch All Categories for the user (including global)
+        // Fetch Categories: Current Workspace OR System Categories (user_id IS NULL)
         const { data: categories, error: catsError } = await supabase
           .from('categories')
           .select(`
@@ -112,6 +119,7 @@ export const useCategoryStore = defineStore('category', {
               name
             )
           `)
+          .or(`workspace_id.eq.${authStore.activeWorkspaceId},user_id.is.null`)
           .is('deleted_at', null)
           .order('name', { ascending: true })
 
@@ -131,7 +139,8 @@ export const useCategoryStore = defineStore('category', {
       
       const insertData = {
         ...payload,
-        user_id: authStore.user?.id
+        user_id: authStore.user?.id,
+        workspace_id: authStore.activeWorkspaceId
       }
 
       const { data, error } = await supabase

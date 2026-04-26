@@ -7,14 +7,23 @@ export const useTransactionStore = defineStore('transaction', {
   state: () => ({
     transactions: [],
     loading: false,
-    error: null
+    error: null,
+    hasMore: true,
+    totalCount: 0
   }),
   actions: {
-    async fetchTransactions() {
+    async fetchTransactions({ startDate = null, endDate = null, offset = 0, limit = 20, append = false } = {}) {
       this.loading = true
       this.error = null
 
-      const { data, error } = await supabase
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.transactions = []
+        this.loading = false
+        return
+      }
+
+      let query = supabase
         .from('transactions')
         .select(`
           *,
@@ -29,15 +38,40 @@ export const useTransactionStore = defineStore('transaction', {
               name
             )
           )
-        `)
+        `, { count: 'exact' })
+        .eq('workspace_id', authStore.activeWorkspaceId)
+
+      // Apply date filters if provided (useful for Calendar view)
+      if (startDate) query = query.gte('created_at', startDate)
+      if (endDate) query = query.lte('created_at', endDate)
+
+      const { data, error, count } = await query
         .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1)
 
       if (error) {
         this.error = error.message
+        this.loading = false
+        return false
+      }
+
+      if (append) {
+        // Merge and avoid duplicates by ID
+        const existingIds = new Set(this.transactions.map(tx => tx.id))
+        const uniqueNewData = (data || []).filter(tx => !existingIds.has(tx.id))
+        this.transactions = [...this.transactions, ...uniqueNewData]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       } else {
         this.transactions = data || []
       }
+
+      this.totalCount = count || 0
+      // If we are fetching a specific range (Calendar), hasMore might not be relevant for the global list
+      // but we can update it based on the count returned for the current query
+      this.hasMore = this.transactions.length < this.totalCount
+      
       this.loading = false
+      return true
     },
 
     async addTransaction(wallet_id, type, amount, description, createdAt = null, category_id = null) {
@@ -45,7 +79,7 @@ export const useTransactionStore = defineStore('transaction', {
       this.error = null
 
       const authStore = useAuthStore()
-      if (!authStore.user) return false
+      if (!authStore.user || !authStore.activeWorkspaceId) return false
 
       const insertData = {
         wallet_id,
@@ -53,7 +87,8 @@ export const useTransactionStore = defineStore('transaction', {
         amount,
         description,
         category_id,
-        created_by: authStore.user.id
+        created_by: authStore.user.id,
+        workspace_id: authStore.activeWorkspaceId
       }
 
       // If a custom date is provided, use it for created_at

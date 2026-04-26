@@ -6,7 +6,24 @@
     <div class="app-sidebar__header">
       <div class="app-sidebar__logo">
         <div class="app-sidebar__logo-box">MC</div>
-        <span v-if="!isCollapsed" class="app-sidebar__app-name">MoneyCap</span>
+        <div v-if="!isCollapsed" class="app-sidebar__brand">
+          <span class="app-sidebar__app-name">MoneyCap</span>
+          <!-- Workspace Switcher -->
+          <div class="app-sidebar__workspace-selector">
+            <select 
+              v-model="authStore.activeWorkspaceId" 
+              class="workspace-select"
+            >
+              <option 
+                v-for="ws in authStore.workspaces" 
+                :key="ws.id" 
+                :value="ws.id"
+              >
+                {{ ws.name }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
       <button class="app-sidebar__toggle" @click="isCollapsed = !isCollapsed">
         <component :is="isCollapsed ? ChevronRight : ChevronLeft" :size="20" />
@@ -61,7 +78,10 @@ import {
   LifeBuoy,
   Camera
 } from 'lucide-vue-next'
+import { useAuthStore } from '../../stores/useAuthStore'
 import AppAvatar from '../ui/AppAvatar.vue'
+
+const authStore = useAuthStore()
 
 defineProps({
   userName: { type: String, default: 'User' },
@@ -145,6 +165,35 @@ const navItems = [
   font-weight: 900;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.app-sidebar__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-sidebar__workspace-selector {
+  margin-top: 4px;
+}
+
+.workspace-select {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+  max-width: 140px;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.workspace-select:hover {
+  color: var(--color-primary-600);
 }
 
 .app-sidebar__toggle {

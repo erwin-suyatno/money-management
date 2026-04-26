@@ -203,6 +203,18 @@
               </div>
             </AppCard>
           </div>
+
+          <!-- Load More -->
+          <div v-if="transactionStore.hasMore" class="mt-6 flex justify-center pb-8">
+            <AppButton 
+              variant="secondary" 
+              size="sm" 
+              :loading="transactionStore.loading"
+              @click="loadMore"
+            >
+              {{ $t('common.load_more') }}
+            </AppButton>
+          </div>
         </div>
 
         <!-- Calendar View -->
@@ -275,7 +287,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
   Plus, 
@@ -320,20 +332,65 @@ const { formatDate, getMonthName } = useFormatDate()
 const viewMode = ref('list')
 const searchQuery = ref('')
 const typeFilter = ref('ALL')
-const startDate = ref('')
-const endDate = ref('')
+const now = new Date()
+const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
+const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+const formatDateForInput = (date) => {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
+const startDate = ref(formatDateForInput(firstDay))
+const endDate = ref(formatDateForInput(lastDay))
 const showAddModal = ref(false)
 const showDayModal = ref(false)
 const showMobileFilters = ref(false)
 const editingTx = ref(null)
-const selectedDate = ref(null)
+const selectedDate = ref(new Date())
 const currentMonth = ref(new Date())
 
 onMounted(async () => {
   await Promise.all([
-    transactionStore.fetchTransactions(),
+    transactionStore.fetchTransactions({ limit: 20 }),
     walletStore.fetchWallets()
   ])
+})
+
+const loadMore = async () => {
+  await transactionStore.fetchTransactions({
+    offset: transactionStore.transactions.length,
+    limit: 20,
+    append: true
+  })
+}
+
+const fetchMonthData = async (date) => {
+  const year = date.getFullYear()
+  const month = date.getMonth()
+  const startOfMonth = new Date(year, month, 1).toISOString()
+  const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999).toISOString()
+  
+  await transactionStore.fetchTransactions({
+    startDate: startOfMonth,
+    endDate: endOfMonth,
+    append: true,
+    limit: 100
+  })
+}
+
+watch(currentMonth, (newVal) => {
+  if (viewMode.value === 'calendar') {
+    fetchMonthData(newVal)
+  }
+})
+
+watch(viewMode, (newVal) => {
+  if (newVal === 'calendar') {
+    fetchMonthData(currentMonth.value)
+  }
 })
 
 const filteredTransactions = computed(() => {

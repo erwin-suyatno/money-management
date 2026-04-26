@@ -9,7 +9,12 @@
     </div>
 
     <div class="app-navbar__center">
-      <h1 class="app-navbar__title">{{ title }}</h1>
+      <div class="app-navbar__title-group">
+        <h1 class="app-navbar__title">{{ title }}</h1>
+        <p v-if="authStore.activeWorkspace" class="app-navbar__subtitle">
+          {{ authStore.activeWorkspace.name }}
+        </p>
+      </div>
     </div>
 
     <div class="app-navbar__right">
@@ -20,6 +25,10 @@
 
 <script setup>
 import { ChevronLeft } from 'lucide-vue-next'
+
+import { useAuthStore } from '../../stores/useAuthStore'
+
+const authStore = useAuthStore()
 
 defineProps({
   title: {
@@ -70,11 +79,27 @@ defineProps({
   justify-content: center;
 }
 
+.app-navbar__title-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .app-navbar__title {
   font-size: var(--font-size-md);
   font-weight: 800;
   color: var(--color-text-primary);
   letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.app-navbar__subtitle {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 1px;
 }
 
 .app-navbar__back {

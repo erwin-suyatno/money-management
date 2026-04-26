@@ -6,40 +6,20 @@ CREATE TABLE public.transactions (
     amount NUMERIC NOT NULL CHECK (amount > 0),
     description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
-    created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE
+    created_by UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    workspace_id UUID REFERENCES public.workspaces(id) ON DELETE CASCADE
 );
 
 -- Aktifkan RLS
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 
--- Policy (Users hanya bisa melihat dan menambah transaksi mereka sendiri + Cek kepemilikan wallet)
-CREATE POLICY "Users can view their own transactions" 
-ON public.transactions FOR SELECT 
-USING (auth.uid() = created_by);
-
-CREATE POLICY "Users can insert their own transactions" 
-ON public.transactions FOR INSERT 
-WITH CHECK (
-    auth.uid() = created_by AND 
-    EXISTS (
-        SELECT 1 FROM public.wallets 
-        WHERE id = wallet_id AND user_id = auth.uid()
-    )
+-- Workspace-Aware Access Policy
+-- Memungkinkan akses jika user adalah pembuat data ATAU anggota workspace terkait
+CREATE POLICY "Access transactions" ON public.transactions
+FOR ALL USING (
+    created_by = auth.uid() OR 
+    workspace_id IN (SELECT m.workspace_id FROM public.workspace_members m WHERE m.user_id = auth.uid())
 );
-
-CREATE POLICY "Users can update their own transactions" 
-ON public.transactions FOR UPDATE 
-USING (auth.uid() = created_by)
-WITH CHECK (
-    EXISTS (
-        SELECT 1 FROM public.wallets 
-        WHERE id = wallet_id AND user_id = auth.uid()
-    )
-);
-
-CREATE POLICY "Users can delete their own transactions" 
-ON public.transactions FOR DELETE 
-USING (auth.uid() = created_by);
 
 -- =========================================================================
 -- TRIGGER UNTUK UPDATE SALDO WALLET SECARA OTOMATIS SAAT TRANSAKSI BERUBAH
