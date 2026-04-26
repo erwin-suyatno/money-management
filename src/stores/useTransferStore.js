@@ -13,7 +13,7 @@ export const useTransferStore = defineStore('transfer', {
     async fetchTransfers() {
       this.loading = true
       this.error = null
-      
+
       const authStore = useAuthStore()
       if (!authStore.activeWorkspaceId) {
         this.transfers = []
@@ -30,7 +30,7 @@ export const useTransferStore = defineStore('transfer', {
         `)
         .eq('workspace_id', authStore.activeWorkspaceId)
         .order('created_at', { ascending: false })
-        
+
       if (error) {
         this.error = error.message
         console.error('Error fetching transfers:', error)
@@ -39,35 +39,35 @@ export const useTransferStore = defineStore('transfer', {
       }
       this.loading = false
     },
-    
+
     async addTransfer(from_wallet_id, to_wallet_id, amount, description) {
       this.loading = true
       this.error = null
-      
+
       const authStore = useAuthStore()
       if (!authStore.user || !authStore.activeWorkspaceId) return false
 
       if (from_wallet_id === to_wallet_id) {
-         this.error = "Cannot transfer to the same wallet"
-         this.loading = false
-         return false
+        this.error = "Cannot transfer to the same wallet"
+        this.loading = false
+        return false
       }
 
       if (amount <= 0) {
-         this.error = "Amount must be greater than 0"
-         this.loading = false
-         return false
+        this.error = "Amount must be greater than 0"
+        this.loading = false
+        return false
       }
 
       const { data, error } = await supabase
         .from('transfers')
-        .insert([{ 
-            from_wallet_id, 
-            to_wallet_id, 
-            amount, 
-            description,
-            created_by: authStore.user.id,
-            workspace_id: authStore.activeWorkspaceId
+        .insert([{
+          from_wallet_id,
+          to_wallet_id,
+          amount,
+          description,
+          created_by: authStore.user.id,
+          workspace_id: authStore.activeWorkspaceId
         }])
         .select(`
           *,
@@ -75,7 +75,7 @@ export const useTransferStore = defineStore('transfer', {
           to_wallet:to_wallet_id (name)
         `)
         .maybeSingle()
-        
+
       if (error) {
         // Handle trigger exception
         this.error = error.message.includes('Insufficient balance') ? 'Insufficient balance in source wallet' : error.message
@@ -87,11 +87,11 @@ export const useTransferStore = defineStore('transfer', {
         return false
       } else {
         this.transfers.unshift(data)
-        
+
         // Refresh wallets
         const walletStore = useWalletStore()
         await walletStore.fetchWallets()
-        
+
         this.loading = false
         return true
       }

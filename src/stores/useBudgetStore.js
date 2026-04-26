@@ -14,10 +14,10 @@ export const useBudgetStore = defineStore('budget', {
     // Calculates spent amount and metrics for each budget
     budgetsWithStats: (state) => {
       const txStore = useTransactionStore()
-      
+
       return state.budgets.map(budget => {
         const { start, end } = calculatePeriodRange(budget.period_type)
-        
+
         const spent = txStore.transactions
           .filter(tx => {
             const txDate = new Date(tx.created_at)
@@ -91,7 +91,7 @@ export const useBudgetStore = defineStore('budget', {
         this.loading = false
         return false
       }
-      
+
       try {
         const { data, error } = await supabase
           .from('budgets')

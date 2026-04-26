@@ -193,9 +193,10 @@ const fetchTransfers = async () => {
     .from('transfers')
     .select(`
       *,
-      from_wallet:wallets!transfers_from_wallet_id_fkey(name),
-      to_wallet:wallets!transfers_to_wallet_id_fkey(name)
+      from_wallet:from_wallet_id(name),
+      to_wallet:to_wallet_id(name)
     `)
+    .eq('workspace_id', authStore.activeWorkspaceId)
     .order('created_at', { ascending: false })
   
   if (!error) transfers.value = data
@@ -221,7 +222,8 @@ const handleSubmit = async () => {
         to_wallet_id: form.value.to_wallet_id,
         amount: form.value.amount,
         description: form.value.note || null,
-        created_by: authStore.user?.id
+        created_by: authStore.user?.id,
+        workspace_id: authStore.activeWorkspaceId
       }])
 
     if (error) throw error

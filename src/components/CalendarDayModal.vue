@@ -25,10 +25,13 @@
              @click="emit('edit', tx)"
              class="p-5 rounded-[2rem] bg-slate-50 dark:bg-gray-800/50 flex items-center justify-between border border-transparent hover:border-slate-100 dark:hover:border-gray-700 transition-all group cursor-pointer">
           <div class="flex items-center space-x-5">
-             <div :class="tx.type === 'INCOME' ? 'bg-emerald-500' : 'bg-rose-500'" 
+             <div :class="[
+                    tx.type === 'INCOME' ? 'bg-emerald-500' : 
+                    tx.type === 'TRANSFER' ? 'bg-blue-500' : 'bg-rose-500'
+                  ]" 
                   class="w-1.5 h-10 rounded-full shadow-lg transition-transform group-hover:scale-y-110"></div>
              <div>
-                <p class="text-sm font-black text-slate-900 dark:text-white tracking-tight">{{ tx.description || $t('transactions.general') }}</p>
+                <p class="text-sm font-black text-slate-900 dark:text-white tracking-tight line-clamp-1">{{ tx.description || $t('transactions.general') }}</p>
                 <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1 flex items-center">
                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-slate-300 mr-2"></span>
                    {{ tx.wallets?.name }}
@@ -36,8 +39,11 @@
              </div>
           </div>
           <div class="text-right">
-             <p :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'" class="font-black tabular-nums tracking-tighter text-lg">
-                {{ tx.type === 'INCOME' ? '+' : '-' }}{{ tx.amount.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}
+             <p :class="[
+                  tx.type === 'INCOME' ? 'text-emerald-500' : 
+                  tx.type === 'TRANSFER' ? 'text-blue-500' : 'text-slate-900 dark:text-white'
+                ]" class="font-black tabular-nums tracking-tighter text-lg">
+                {{ tx.type === 'INCOME' ? '+' : (tx.type === 'TRANSFER' ? '' : '-') }}{{ tx.amount.toLocaleString(locale === 'id' ? 'id-ID' : 'en-US') }}
              </p>
           </div>
         </div>

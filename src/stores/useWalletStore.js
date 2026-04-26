@@ -12,7 +12,7 @@ export const useWalletStore = defineStore('wallet', {
     async fetchWallets() {
       this.loading = true
       this.error = null
-      
+
       const authStore = useAuthStore()
       if (!authStore.activeWorkspaceId) {
         this.wallets = []
@@ -25,7 +25,7 @@ export const useWalletStore = defineStore('wallet', {
         .select('*')
         .eq('workspace_id', authStore.activeWorkspaceId)
         .order('created_at', { ascending: false })
-        
+
       if (error) {
         this.error = error.message
         console.error('Error fetching wallets:', error)
@@ -34,11 +34,11 @@ export const useWalletStore = defineStore('wallet', {
       }
       this.loading = false
     },
-    
+
     async createWallet(name, initialBalance = 0) {
       this.loading = true
       this.error = null
-      
+
       const authStore = useAuthStore()
       if (!authStore.user || !authStore.activeWorkspaceId) {
         this.error = "Workspace not selected"
@@ -49,8 +49,8 @@ export const useWalletStore = defineStore('wallet', {
       const { data, error } = await supabase
         .from('wallets')
         .insert([
-          { 
-            name, 
+          {
+            name,
             balance: initialBalance,
             user_id: authStore.user.id,
             workspace_id: authStore.activeWorkspaceId
@@ -58,7 +58,7 @@ export const useWalletStore = defineStore('wallet', {
         ])
         .select()
         .single()
-        
+
       if (error) {
         this.error = error.message
         console.error('Error creating wallet:', error)
@@ -74,12 +74,12 @@ export const useWalletStore = defineStore('wallet', {
     async deleteWallet(id) {
       this.loading = true
       this.error = null
-      
+
       const { error } = await supabase
         .from('wallets')
         .delete()
         .eq('id', id)
-        
+
       if (error) {
         this.error = error.message
         console.error('Error deleting wallet:', error)

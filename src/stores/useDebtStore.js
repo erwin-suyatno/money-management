@@ -57,8 +57,8 @@ export const useDebtStore = defineStore('debt', () => {
     try {
       const { data, error: err } = await supabase
         .from('debts')
-        .insert([{ 
-          ...payload, 
+        .insert([{
+          ...payload,
           user_id: authStore.user?.id,
           workspace_id: authStore.activeWorkspaceId
         }])
@@ -127,13 +127,13 @@ export const useDebtStore = defineStore('debt', () => {
       // Calculate payments made to this specific debt
       const payments = transactionStore.transactions.filter(tx => tx.debt_id === debt.id)
       const totalPaid = payments.reduce((sum, tx) => sum + Math.abs(Number(tx.amount)), 0)
-      
+
       // Calculate tenure progress
       const startDate = new Date(debt.start_date)
       const today = new Date()
       const monthsElapsed = (today.getFullYear() - startDate.getFullYear()) * 12 + (today.getMonth() - startDate.getMonth())
       const currentTenure = Math.min(Math.max(monthsElapsed + 1, 0), debt.tenure_months)
-      
+
       const remainingBalance = Math.max(debt.total_principal - totalPaid, 0)
       const percentagePaid = (totalPaid / debt.total_principal) * 100
 
@@ -168,8 +168,8 @@ export const useDebtStore = defineStore('debt', () => {
       .filter(tx => {
         const txDate = new Date(tx.created_at)
         return (
-          tx.type === 'INCOME' && 
-          txDate.getMonth() === currentMonth && 
+          tx.type === 'INCOME' &&
+          txDate.getMonth() === currentMonth &&
           txDate.getFullYear() === currentYear
         )
       })

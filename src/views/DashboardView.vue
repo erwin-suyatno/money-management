@@ -186,9 +186,14 @@
                    @click="openEdit(tx)"
               >
                 <div class="flex items-center gap-3">
-                  <div :class="tx.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-600 dark:bg-gray-800 dark:text-slate-300'" 
+                  <div :class="[
+                         tx.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 
+                         tx.type === 'TRANSFER' ? 'bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400' :
+                         'bg-slate-100 text-slate-600 dark:bg-gray-800 dark:text-slate-300'
+                       ]" 
                        class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 duration-500">
                     <ArrowUpRight v-if="tx.type === 'INCOME'" :size="18" stroke-width="3" />
+                    <ArrowLeftRight v-else-if="tx.type === 'TRANSFER'" :size="18" stroke-width="3" />
                     <ArrowDownLeft v-else :size="18" stroke-width="3" />
                   </div>
                   <div>
@@ -258,6 +263,10 @@
                   <div v-if="dailySummaries[getDateKey(d.date)].expense > 0" class="h-0.5 lg:h-3 w-full bg-rose-500/10 rounded-full flex items-center px-1">
                      <div class="w-0.5 h-0.5 rounded-full bg-rose-500 lg:mr-1"></div>
                      <span class="text-[7px] font-black text-rose-600 hidden lg:block uppercase tracking-tighter">-{{ (dailySummaries[getDateKey(d.date)].expense/1000).toFixed(0) }}k</span>
+                  </div>
+                  <div v-if="dailySummaries[getDateKey(d.date)].transfer > 0" class="h-0.5 lg:h-3 w-full bg-blue-500/10 rounded-full flex items-center px-1">
+                     <div class="w-0.5 h-0.5 rounded-full bg-blue-500 lg:mr-1"></div>
+                     <span class="text-[7px] font-black text-blue-600 hidden lg:block uppercase tracking-tighter">{{ (dailySummaries[getDateKey(d.date)].transfer/1000).toFixed(0) }}k</span>
                   </div>
                 </div>
               </div>
@@ -370,6 +379,13 @@
       @success="handleTxSuccess" 
     />
 
+    <TransferFormModal
+      :is-open="showTransferModal"
+      :initial-data="editingTransfer"
+      @close="closeTransferModal"
+      @success="handleTxSuccess"
+    />
+
     <CalendarDayModal 
       :is-open="showDetailModal" 
       :date="selectedDate" 
@@ -396,8 +412,8 @@ import {
   ArrowDownLeft,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   ArrowLeftRight,
+  ChevronDown,
   Scan,
   Sparkles,
   Crown,
@@ -405,6 +421,8 @@ import {
   TrendingUp,
   BarChart3
 } from 'lucide-vue-next'
+
+import { supabase } from '../services/supabase'
 
 import { useAuthStore } from '../stores/useAuthStore'
 import { useWalletStore } from '../stores/useWalletStore'
@@ -440,6 +458,7 @@ import NetWorthChart from '../components/analytics/NetWorthChart.vue'
 import BudgetActualChart from '../components/analytics/BudgetActualChart.vue'
 import EmergencyFundCard from '../components/analytics/EmergencyFundCard.vue'
 import TransactionFormModal from '../components/TransactionFormModal.vue'
+import TransferFormModal from '../components/TransferFormModal.vue'
 import CalendarDayModal from '../components/CalendarDayModal.vue'
 
 const authStore = useAuthStore()
@@ -461,13 +480,16 @@ const { t } = i18n
 const selectedRange = ref('30d')
 const activeTab = ref('overview')
 const showAddModal = ref(false)
+const showTransferModal = ref(false)
 const showDetailModal = ref(false)
 const editingTx = ref(null)
+const editingTransfer = ref(null)
 const selectedDate = ref(new Date())
 const currentMonth = ref(new Date())
 
 const customStartDate = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0])
 const customEndDate = ref(new Date().toISOString().split('T')[0])
+const monthTransfers = ref([])
 
 const showOnboarding = ref(!authStore.user?.user_metadata?.financial_profile)
 
@@ -488,13 +510,64 @@ const todayDate = computed(() => {
 onMounted(async () => {
   await Promise.all([
     walletStore.fetchWallets(),
-    transactionStore.fetchTransactions(),
     categoryStore.fetchInitialData(),
     budgetStore.fetchBudgets(),
     debtStore.fetchDebts(),
     refreshAnalytics()
   ])
 })
+
+// Fetch all transactions for the current month (Calendar focus)
+const fetchCalendarData = async () => {
+  const year = currentMonth.value.getFullYear()
+  const month = currentMonth.value.getMonth()
+  
+  // Format dates manually to ensure they cover the full local day range
+  const startDate = new Date(year, month, 1, 0, 0, 0, 0).toISOString()
+  const endDate = new Date(year, month + 1, 0, 23, 59, 59, 999).toISOString()
+  
+  await Promise.all([
+    transactionStore.fetchTransactions({
+      startDate,
+      endDate,
+      limit: 1000
+    }),
+    fetchMonthTransfers(startDate, endDate)
+  ])
+}
+
+const fetchMonthTransfers = async (start, end) => {
+  if (!authStore.activeWorkspaceId) return
+
+  try {
+    const { data, error } = await supabase
+      .from('transfers')
+      .select(`
+        id, 
+        amount, 
+        created_at, 
+        description,
+        from_wallet:from_wallet_id(name),
+        to_wallet:to_wallet_id(name)
+      `)
+      .eq('workspace_id', authStore.activeWorkspaceId)
+      .gte('created_at', start)
+      .lte('created_at', end)
+      .order('created_at', { ascending: false })
+    
+    if (error) throw error
+    monthTransfers.value = data || []
+  } catch (err) {
+    console.error('Error fetching transfers:', err)
+    monthTransfers.value = []
+  }
+}
+
+watch([currentMonth, () => authStore.activeWorkspaceId], () => {
+  if (authStore.activeWorkspaceId) {
+    fetchCalendarData()
+  }
+}, { immediate: true })
 
 const refreshAnalytics = async () => {
   let start, end
@@ -540,7 +613,20 @@ const filteredTransactions = computed(() => transactionStore.analyticsTransactio
 
 const totalIncome = computed(() => transactionStore.analyticsTransactions.filter(tx => tx.type === 'INCOME').reduce((s, tx) => s + Number(tx.amount), 0))
 const totalExpense = computed(() => transactionStore.analyticsTransactions.filter(tx => tx.type === 'EXPENSE').reduce((s, tx) => s + Number(tx.amount), 0))
-const recentTransactions = computed(() => [...transactionStore.transactions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5))
+
+const recentTransactions = computed(() => {
+  const txs = [...transactionStore.transactions]
+  const tfrs = monthTransfers.value.map(t => ({
+    ...t,
+    type: 'TRANSFER',
+    description: t.description || `Transfer: ${t.from_wallet?.name} → ${t.to_wallet?.name}`,
+    category_name: 'Transfer'
+  }))
+  
+  return [...txs, ...tfrs]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    .slice(0, 5)
+})
 
 // Calendar Logic
 const calendarDays = computed(() => {
@@ -560,13 +646,24 @@ const calendarDays = computed(() => {
 
 const dailySummaries = computed(() => {
   const summaries = {}
+  
+  // Transactions
   transactionStore.transactions.forEach(tx => {
     const d = new Date(tx.created_at)
     const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-    if (!summaries[key]) summaries[key] = { income: 0, expense: 0 }
+    if (!summaries[key]) summaries[key] = { income: 0, expense: 0, transfer: 0 }
     if (tx.type === 'INCOME') summaries[key].income += Number(tx.amount)
     if (tx.type === 'EXPENSE') summaries[key].expense += Number(tx.amount)
   })
+
+  // Transfers
+  monthTransfers.value.forEach(t => {
+    const d = new Date(t.created_at)
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+    if (!summaries[key]) summaries[key] = { income: 0, expense: 0, transfer: 0 }
+    summaries[key].transfer += Number(t.amount)
+  })
+
   return summaries
 })
 
@@ -584,15 +681,43 @@ const openDetails = (date) => { selectedDate.value = date; showDetailModal.value
 
 const selectedDateTransactions = computed(() => {
   if (!selectedDate.value) return []
-  return transactionStore.transactions.filter(tx => {
+  
+  const txs = transactionStore.transactions.filter(tx => {
     const txDate = new Date(tx.created_at)
     return txDate.getFullYear() === selectedDate.value.getFullYear() &&
            txDate.getMonth() === selectedDate.value.getMonth() &&
            txDate.getDate() === selectedDate.value.getDate()
   })
+
+  const tfrs = monthTransfers.value.filter(t => {
+    const txDate = new Date(t.created_at)
+    return txDate.getFullYear() === selectedDate.value.getFullYear() &&
+           txDate.getMonth() === selectedDate.value.getMonth() &&
+           txDate.getDate() === selectedDate.value.getDate()
+  }).map(t => ({
+    ...t,
+    type: 'TRANSFER',
+    description: t.description || `Transfer: ${t.from_wallet?.name} → ${t.to_wallet?.name}`,
+    wallets: { name: `${t.from_wallet?.name} → ${t.to_wallet?.name}` }
+  }))
+
+  return [...txs, ...tfrs].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 })
 
-const openEdit = (tx) => { /* Logic to open edit */ }
+const openEdit = (item) => {
+  if (item.type === 'TRANSFER') {
+    editingTransfer.value = item
+    showTransferModal.value = true
+  } else {
+    editingTx.value = item
+    showAddModal.value = true
+  }
+}
+
+const closeTransferModal = () => {
+  showTransferModal.value = false
+  editingTransfer.value = null
+}
 const openAddModal = (date = null) => { 
   selectedDate.value = date || new Date()
   showAddModal.value = true 

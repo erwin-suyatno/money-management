@@ -70,11 +70,11 @@ export const useTransactionStore = defineStore('transaction', {
       // If we are fetching a specific range (Calendar), hasMore might not be relevant for the global list
       // but we can update it based on the count returned for the current query
       this.hasMore = this.transactions.length < this.totalCount
-      
+
       this.loading = false
       return true
     },
-    
+
     async fetchAnalyticsData({ startDate = null, endDate = null } = {}) {
       this.loading = true
       this.error = null
