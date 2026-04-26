@@ -101,8 +101,11 @@ import CategoryFormModal from '../components/features/CategoryFormModal.vue'
 
 const isLoading = computed(() => categoryStore.loading)
 
+import { useI18n } from 'vue-i18n'
+
 const authStore = useAuthStore()
 const categoryStore = useCategoryStore()
+const { t } = useI18n()
 const router = useRouter()
 
 const showModal = ref(false)
@@ -161,8 +164,7 @@ const confirmDelete = async (cat) => {
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
 
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+
 </script>
 
 <style scoped>

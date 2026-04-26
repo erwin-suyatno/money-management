@@ -321,8 +321,11 @@ const isLoading = computed(() => transactionStore.loading)
 import TransactionFormModal from '../components/TransactionFormModal.vue'
 import CalendarDayModal from '../components/CalendarDayModal.vue'
 
+import { useI18n } from 'vue-i18n'
+
 const authStore = useAuthStore()
 const transactionStore = useTransactionStore()
+const { t } = useI18n()
 const walletStore = useWalletStore()
 const categoryStore = useCategoryStore()
 const router = useRouter()
@@ -536,8 +539,7 @@ const selectedDateTransactions = computed(() => {
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
 
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+
 </script>
 
 <style scoped>

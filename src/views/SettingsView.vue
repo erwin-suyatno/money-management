@@ -144,7 +144,10 @@ import AppAvatar from '../components/ui/AppAvatar.vue'
 import AppBadge from '../components/ui/AppBadge.vue'
 import AppSkeleton from '../components/ui/AppSkeleton.vue'
 
+import { useI18n } from 'vue-i18n'
+
 const authStore = useAuthStore()
+const { t } = useI18n()
 const isLoading = ref(true)
 import { onMounted } from 'vue'
 onMounted(() => setTimeout(() => isLoading.value = false, 600))

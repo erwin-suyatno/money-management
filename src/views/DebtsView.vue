@@ -234,8 +234,11 @@ import AppButton from '../components/ui/AppButton.vue'
 import AppSkeleton from '../components/ui/AppSkeleton.vue'
 import DebtFormModal from '../components/features/DebtFormModal.vue'
 
+import { useI18n } from 'vue-i18n'
+
 const authStore = useAuthStore()
 const debtStore = useDebtStore()
+const { t } = useI18n()
 const router = useRouter()
 const { formatIDR } = useCurrency()
 const { formatDate } = useFormatDate()
@@ -306,8 +309,7 @@ const getDtiAdvice = (status) => {
 
 const handleLogout = async () => { await authStore.logout(); router.push('/login') }
 
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
+
 </script>
 
 <style scoped>
