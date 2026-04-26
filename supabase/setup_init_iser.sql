@@ -5,20 +5,24 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user_setup()
 RETURNS TRIGGER AS $$
 DECLARE
-    expense_type_id UUID;
-    income_type_id UUID;
+    new_workspace_id UUID;
 BEGIN
-    -- 1. Buat Dompet Utama Otomatis (Default Wallet)
-    INSERT INTO public.wallets (name, balance, user_id)
-    VALUES ('Tunai/Cash', 0, NEW.id);
+    -- 1. Create Personal Workspace for the new user
+    INSERT INTO public.workspaces (name, owner_id, type)
+    VALUES ('Personal Workspace', NEW.id, 'personal')
+    RETURNING id INTO new_workspace_id;
+
+    -- 2. Add the user as the owner of their workspace
+    INSERT INTO public.workspace_members (workspace_id, user_id, role)
+    VALUES (new_workspace_id, NEW.id, 'owner');
+
+    -- 3. Buat Dompet Utama Otomatis (Default Wallet)
+    INSERT INTO public.wallets (name, balance, user_id, workspace_id)
+    VALUES ('Tunai/Cash', 0, NEW.id, new_workspace_id);
 
     -- Catatan: Kategori Global (user_id IS NULL) sudah otomatis bisa dilihat 
     -- oleh user baru berkat RLS policy yang kita buat sebelumnya.
     
-    -- Namun, jika Anda ingin user memiliki kategori PRIVAT yang bisa mereka edit sendiri 
-    -- sejak awal, kita bisa melakukan INSERT Copy di sini. 
-    -- Untuk sekarang, kita gunakan sistem Global agar database tetap ringan.
-
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
