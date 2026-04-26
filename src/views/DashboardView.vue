@@ -15,199 +15,249 @@
        <InvestmentGuardAlert />
     </div>
 
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 md:mb-10 px-1 md:px-0">
-      <div class="animate-slide-up">
-        <h2 class="text-2xl md:text-3xl font-black tracking-tighter text-slate-900 dark:text-white italic">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8 px-1 md:px-0">
+      <div class="animate-slide-up space-y-1">
+        <div class="flex items-center gap-3 mb-1">
+          <div class="w-8 h-8 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-600 dark:text-primary-400">
+            <Sparkles :size="16" stroke-width="2.5" />
+          </div>
+          <p class="text-[9px] font-black uppercase tracking-[0.3em] text-primary-500/80">{{ todayDate }}</p>
+        </div>
+        <h2 class="text-2xl md:text-3xl lg:text-4xl font-black tracking-tighter text-slate-900 dark:text-white leading-tight">
            {{ $t('welcome.greeting', { name: authStore.user?.user_metadata?.full_name?.split(' ')[0] || $t('common.user') }) }}
         </h2>
-        <p class="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mt-1.5">{{ todayDate }}</p>
+        <p class="text-xs font-medium text-slate-500 dark:text-slate-400 max-w-md">{{ $t('dashboard.destiny_ready') }}</p>
       </div>
       
-      <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-        <select 
-          v-model="selectedRange" 
-          class="w-full sm:w-40 md:w-48 bg-white dark:bg-gray-800 border border-slate-100 dark:border-gray-800 rounded-2xl px-5 py-3 text-[10px] md:text-xs font-black uppercase tracking-widest focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
-        >
-          <option value="7d">{{ $t('dashboard.range_7d') }}</option>
-          <option value="30d">{{ $t('dashboard.range_30d') }}</option>
-          <option value="year">{{ $t('dashboard.range_year') }}</option>
-        </select>
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+        <div class="relative flex-1 sm:flex-none">
+          <select 
+            v-model="selectedRange" 
+            class="w-full sm:w-48 appearance-none bg-white dark:bg-gray-800 border-none rounded-2xl px-6 py-4 text-[10px] md:text-xs font-black uppercase tracking-widest focus:ring-4 focus:ring-primary-500/10 outline-none shadow-xl shadow-slate-200/50 dark:shadow-none"
+          >
+            <option value="7d">{{ $t('dashboard.range_7d') }}</option>
+            <option value="30d">{{ $t('dashboard.range_30d') }}</option>
+            <option value="year">{{ $t('dashboard.range_year') }}</option>
+            <option value="custom">{{ $t('dashboard.range_custom') || 'Custom Range' }}</option>
+          </select>
+          <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <ChevronDown :size="14" stroke-width="3" />
+          </div>
+        </div>
+
+        <div v-if="selectedRange === 'custom'" class="flex items-center gap-2 animate-fade-in bg-white dark:bg-gray-800 p-2 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none">
+          <input 
+            type="date" 
+            v-model="customStartDate"
+            class="bg-transparent border-none rounded-xl px-2 py-1 text-[10px] font-black uppercase outline-none"
+          />
+          <span class="text-slate-300 text-[10px] font-black italic">TO</span>
+          <input 
+            type="date" 
+            v-model="customEndDate"
+            class="bg-transparent border-none rounded-xl px-2 py-1 text-[10px] font-black uppercase outline-none"
+          />
+        </div>
         
         <AppButton 
           variant="primary" 
-          size="md" 
-          class="w-full sm:w-auto !rounded-2xl shadow-xl shadow-primary-500/20" 
+          size="lg" 
+          class="!rounded-2xl !py-4 !px-8 shadow-2xl shadow-primary-500/40 hover:scale-105 transition-all" 
           @click="showAddModal = true"
         >
-          <template #prefix><Plus :size="18" /></template>
-          <span>{{ $t('actions.transaction') }}</span>
+          <template #prefix><Plus :size="20" stroke-width="3" /></template>
+          <span class="font-black uppercase tracking-widest text-xs">{{ $t('actions.transaction') }}</span>
         </AppButton>
       </div>
     </div>
 
-    <!-- Tab Switching -->
-    <div class="flex border-b border-slate-100 dark:border-gray-800 mb-8 md:mb-10 overflow-x-auto scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+    <!-- Tab Switching: Modern Pill Style -->
+    <div class="inline-flex p-1.5 bg-slate-100 dark:bg-gray-900 rounded-[2rem] mb-8 overflow-x-auto scrollbar-hide max-w-full">
       <button 
         v-for="tab in tabs" 
         :key="tab.id"
         @click="activeTab = tab.id"
-        class="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] transition-all relative whitespace-nowrap"
-        :class="activeTab === tab.id ? 'text-primary-600' : 'text-slate-400 hover:text-slate-600'"
+        class="flex items-center gap-2.5 px-6 py-2.5 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.1em] transition-all duration-500 relative whitespace-nowrap"
+        :class="activeTab === tab.id 
+          ? 'bg-white dark:bg-gray-800 text-primary-600 shadow-xl shadow-slate-200/50 dark:shadow-none scale-[1.02]' 
+          : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'"
       >
-        <div class="flex items-center gap-2.5 md:gap-3">
-          <component :is="tab.icon" :size="14" class="md:hidden" />
-          <component :is="tab.icon" :size="16" class="hidden md:block" />
-          {{ $t(tab.key) }}
-        </div>
-        <div 
-          v-if="activeTab === tab.id" 
-          class="absolute bottom-0 left-4 right-4 h-1 bg-primary-600 rounded-t-full"
-        ></div>
+        <component :is="tab.icon" :size="14" stroke-width="2.5" />
+        {{ $t(tab.key) }}
       </button>
     </div>
 
     <!-- VIEW: OVERVIEW -->
-    <div v-if="activeTab === 'overview'" class="space-y-12 animate-slide-up">
-      <!-- FIRST HIGHLIGHT: Summary Cards -->
+    <div v-if="activeTab === 'overview'" class="space-y-8 animate-slide-up">
       <SummaryCards 
         :total-balance="totalBalance" 
         :total-income="totalIncome" 
         :total-expense="totalExpense"
-        :transactions="transactionStore.transactions"
+        :transactions="transactionStore.analyticsTransactions"
+        @add-transaction="showAddModal = true"
       />
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:items-stretch items-start">
+        <!-- Big Analysis: Cash Flow -->
+        <div class="lg:col-span-8 space-y-6">
+          <AppCard class="overflow-hidden border-none shadow-2xl shadow-slate-200/50">
+            <template #header>
+              <div class="flex items-center justify-between w-full">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $t('analytics.cash_flow') }}</h4>
+                <div class="flex gap-2">
+                  <span class="flex items-center gap-1.5 text-[9px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-lg">
+                    <ArrowUpRight :size="10" /> {{ $t('dashboard.income') }}
+                  </span>
+                  <span class="flex items-center gap-1.5 text-[9px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-2 py-0.5 rounded-lg">
+                    <ArrowDownLeft :size="10" /> {{ $t('dashboard.expense') }}
+                  </span>
+                </div>
+              </div>
+            </template>
+            <CashFlowChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
+          </AppCard>
 
-      <!-- MAIN GRID: Cash Flow vs Financial Ladder -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <!-- Main Column (Left/Center) -->
-        <div class="lg:col-span-8 space-y-10">
-           <!-- Big Analysis: Cash Flow -->
-           <AppCard class="overflow-hidden border-none shadow-2xl shadow-slate-200/50">
-             <template #header>
-               <div class="flex items-center justify-between w-full">
-                 <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">{{ $t('analytics.cash_flow') }}</h4>
-                 <div class="flex gap-2">
-                    <span class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">
-                      <ArrowUpRight :size="12" /> {{ $t('dashboard.income') }}
-                    </span>
-                    <span class="flex items-center gap-1.5 text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-900/20 px-2 py-1 rounded-lg">
-                      <ArrowDownLeft :size="12" /> {{ $t('dashboard.expense') }}
-                    </span>
-                 </div>
-               </div>
-             </template>
-             <CashFlowChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
-           </AppCard>
-           
-           <!-- Secondary Insights Row -->
-           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <AppCard class="group">
-                <template #header>
-                   <div class="flex items-center justify-between w-full">
-                      <h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('dashboard.spending_allocation') }}</h4>
-                      <PieChart :size="14" class="text-slate-300" />
-                   </div>
-                </template>
-                <CategoryDonutChart 
-                   :transactions="filteredTransactions" 
-                   type="EXPENSE" 
-                   :title="$t('categories.form_category')"
-                   :is-dark-mode="isDark" 
-                />
-              </AppCard>
-
-              <AppCard>
-                <template #header>
-                  <div class="flex items-center justify-between w-full">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">{{ $t('budgets.health') }}</h4>
-                    <AppButton variant="ghost" size="sm" class="!h-6 !text-[9px]" @click="router.push('/budget')">{{ $t('dashboard.view_all') }}</AppButton>
+          <!-- Secondary Insights Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <AppCard class="group !rounded-3xl border-none shadow-2xl shadow-slate-200/50 overflow-hidden">
+              <template #header>
+                <div class="flex items-center justify-between w-full">
+                  <h4 class="font-black text-[9px] uppercase tracking-[0.2em] text-slate-400">{{ $t('dashboard.spending_allocation') }}</h4>
+                  <div class="p-1.5 bg-slate-50 dark:bg-gray-800 rounded-lg">
+                    <PieChart :size="14" class="text-primary-500" />
                   </div>
-                </template>
+                </div>
+              </template>
+              <div class="py-2">
+                <CategoryDonutChart 
+                  :transactions="filteredTransactions" 
+                  type="EXPENSE" 
+                  :title="$t('categories.form_category')"
+                  :is-dark-mode="isDark" 
+                />
+              </div>
+            </AppCard>
+
+            <AppCard class="!rounded-3xl border-none shadow-2xl shadow-slate-200/50">
+              <template #header>
+                <div class="flex items-center justify-between w-full">
+                  <h4 class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{{ $t('budgets.health') }}</h4>
+                  <AppButton variant="ghost" size="sm" class="!h-8 !px-3 !rounded-lg !text-[9px] font-black uppercase tracking-widest bg-slate-50 dark:bg-gray-800" @click="router.push('/budget')">
+                    {{ $t('dashboard.view_all') }}
+                  </AppButton>
+                </div>
+              </template>
+              <div class="py-2">
                 <BudgetProgressWidget :limit="3" />
-              </AppCard>
-           </div>
+              </div>
+            </AppCard>
+          </div>
         </div>
 
-        <div class="lg:col-span-4">
-           <SidebarInsights :health-score="healthScore" class="sticky top-24" />
+        <div class="lg:col-span-4 h-full">
+          <SidebarInsights :health-score="healthScore" />
         </div>
       </div>
 
       <!-- Bottom: Recent Activity & Calendar -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Recent Transactions -->
         <div class="lg:col-span-4 space-y-4">
           <div class="flex items-center justify-between px-2">
-            <h3 class="text-lg font-black dark:text-white">{{ $t('dashboard.recent_activity') }}</h3>
-            <AppButton variant="ghost" size="sm" @click="router.push('/transaction')">{{ $t('dashboard.view_all') }}</AppButton>
+            <h3 class="text-base font-black dark:text-white">{{ $t('dashboard.recent_activity') }}</h3>
+            <AppButton variant="ghost" size="sm" class="!text-[10px]" @click="router.push('/transaction')">{{ $t('dashboard.view_all') }}</AppButton>
           </div>
-          <AppCard class="!p-0 overflow-hidden divide-y divide-slate-100 dark:divide-gray-800/50">
+          <AppCard class="!p-0 overflow-hidden divide-y divide-slate-100 dark:divide-gray-800/50 !rounded-3xl shadow-xl shadow-slate-200/50">
             <template v-if="isLoading">
               <div v-for="i in 5" :key="i" class="p-4 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                  <AppSkeleton variant="circle" width="40px" height="40px" />
-                  <div class="space-y-2">
-                    <AppSkeleton width="120px" height="14px" />
-                    <AppSkeleton width="60px" height="10px" />
+                  <AppSkeleton variant="circle" width="32px" height="32px" />
+                  <div class="space-y-1">
+                    <AppSkeleton width="100px" height="12px" />
+                    <AppSkeleton width="50px" height="8px" />
                   </div>
                 </div>
-                <AppSkeleton width="80px" height="18px" />
+                <AppSkeleton width="60px" height="14px" />
               </div>
             </template>
             <template v-else>
-              <div v-for="tx in recentTransactions" :key="tx.id" class="p-4 hover:bg-slate-50 dark:hover:bg-gray-800/30 transition-all flex items-center justify-between group">
+              <div v-for="tx in recentTransactions" :key="tx.id" 
+                   class="p-4 hover:bg-slate-50 dark:hover:bg-gray-800/40 transition-all flex items-center justify-between group cursor-pointer border-b border-slate-50 last:border-0 dark:border-gray-800/30"
+                   @click="openEdit(tx)"
+              >
                 <div class="flex items-center gap-3">
-                  <div :class="tx.type === 'INCOME' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/10' : 'bg-rose-50 text-rose-600 dark:bg-rose-900/10'" 
-                      class="w-10 h-10 rounded-xl flex items-center justify-center">
-                    <ArrowUpRight :size="18" />
+                  <div :class="tx.type === 'INCOME' ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400' : 'bg-slate-100 text-slate-600 dark:bg-gray-800 dark:text-slate-300'" 
+                       class="w-10 h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 duration-500">
+                    <ArrowUpRight v-if="tx.type === 'INCOME'" :size="18" stroke-width="3" />
+                    <ArrowDownLeft v-else :size="18" stroke-width="3" />
                   </div>
                   <div>
-                    <p class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">{{ tx.description }}</p>
-                    <p class="text-[10px] font-medium text-slate-400">{{ formatShort(tx.created_at) }}</p>
+                    <p class="text-[12px] font-black text-slate-900 dark:text-white line-clamp-1 mb-0.5 tracking-tight group-hover:text-primary-600 transition-colors">{{ tx.description }}</p>
+                    <div class="flex items-center gap-2">
+                       <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{{ formatShort(tx.created_at) }}</p>
+                       <span class="w-1 h-1 rounded-full bg-slate-200 dark:bg-gray-700"></span>
+                       <p class="text-[9px] font-black text-slate-300 uppercase tracking-tighter">{{ tx.category_name || 'Uncategorized' }}</p>
+                    </div>
                   </div>
                 </div>
-                <p :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'" class="text-sm font-black tabular-nums">
-                  {{ tx.type === 'INCOME' ? '+' : '-' }}{{ formatRaw(tx.amount) }}
-                </p>
+                <div class="text-right">
+                  <p :class="tx.type === 'INCOME' ? 'text-emerald-500' : 'text-slate-900 dark:text-white'" class="text-[14px] font-black tabular-nums tracking-tighter">
+                    {{ tx.type === 'INCOME' ? '+' : '-' }}{{ formatRaw(tx.amount) }}
+                  </p>
+                </div>
               </div>
-              <div v-if="recentTransactions.length === 0" class="p-12 text-center text-slate-400 font-medium italic">{{ $t('dashboard.empty_activity') }}</div>
+              <div v-if="recentTransactions.length === 0" class="p-8 text-center text-slate-400 font-medium text-xs italic">{{ $t('dashboard.empty_activity') }}</div>
             </template>
           </AppCard>
+
+          <!-- QUICK ACTIONS -->
+          <div class="grid grid-cols-1 gap-3">
+            <button 
+              @click="router.push('/transfer')"
+              class="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 hover:border-primary-500/50 hover:shadow-lg hover:shadow-primary-500/5 transition-all group"
+            >
+              <div class="w-8 h-8 rounded-xl bg-primary-50 dark:bg-primary-900/10 flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform">
+                <ArrowLeftRight :size="16" />
+              </div>
+              <span class="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ $t('actions.transfer') }}</span>
+            </button>
+          </div>
         </div>
 
         <!-- Calendar Component -->
         <div class="lg:col-span-8 space-y-4">
            <div class="flex items-center justify-between px-2">
-            <h3 class="text-lg font-black dark:text-white">{{ $t('dashboard.calendar') }}</h3>
+            <h3 class="text-base font-black dark:text-white">{{ $t('dashboard.calendar') }}</h3>
             <div class="flex items-center gap-2">
-              <AppButton variant="secondary" size="sm" icon-only @click="prevMonth"><ChevronLeft :size="16" /></AppButton>
-              <span class="text-xs font-bold uppercase tracking-widest min-w-[100px] text-center">{{ getMonthName(currentMonth) }} {{ currentMonth.getFullYear() }}</span>
-              <AppButton variant="secondary" size="sm" icon-only @click="nextMonth"><ChevronRight :size="16" /></AppButton>
+              <AppButton variant="secondary" size="sm" icon-only class="!w-8 !h-8" @click="prevMonth"><ChevronLeft :size="14" /></AppButton>
+              <span class="text-[10px] font-bold uppercase tracking-widest min-w-[80px] text-center">{{ getMonthName(currentMonth) }} {{ currentMonth.getFullYear() }}</span>
+              <AppButton variant="secondary" size="sm" icon-only class="!w-8 !h-8" @click="nextMonth"><ChevronRight :size="14" /></AppButton>
             </div>
           </div>
-          <AppCard class="!p-0">
-            <div class="grid grid-cols-7 border-b border-slate-100 dark:border-gray-800/50">
-              <div v-for="day in ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']" :key="day" class="p-3 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
+          <AppCard class="!p-0 !rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden">
+            <div class="grid grid-cols-7 border-b border-slate-100 dark:border-gray-800/50 bg-slate-50/50 dark:bg-gray-900/50">
+              <div v-for="day in ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']" :key="day" class="p-2 text-[9px] font-black uppercase tracking-widest text-slate-400 text-center">
                 {{ $t('common.days.' + day) }}
               </div>
             </div>
             <div class="grid grid-cols-7">
               <div v-for="(d, i) in calendarDays" :key="i" @click="openDetails(d.date)"
-                  class="h-20 sm:h-24 p-2 border-r border-b border-slate-100 dark:border-gray-800/50 relative transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800/20"
-                  :class="[!d.current ? 'bg-slate-50/50 dark:bg-gray-900/20 opacity-40' : '']">
-                <span class="text-[10px] font-bold inline-flex items-center justify-center" 
+                  class="h-16 sm:h-20 p-2 border-r border-b border-slate-100 dark:border-gray-800/50 relative transition-all cursor-pointer hover:bg-slate-50 dark:hover:bg-gray-800/20 last:border-r-0"
+                  :class="[!d.current ? 'bg-slate-50/20 dark:bg-gray-900/10 opacity-30' : '']">
+                <span class="text-[9px] font-bold inline-flex items-center justify-center" 
                       :class="[
-                        d.current ? (isToday(d.date) ? 'bg-primary-600 text-white w-6 h-6 rounded-full' : 'text-slate-900 dark:text-white') : 'text-slate-300'
+                        d.current ? (isToday(d.date) ? 'bg-primary-600 text-white w-5 h-5 rounded-full' : 'text-slate-900 dark:text-white') : 'text-slate-300'
                       ]">
                   {{ d.day }}
                 </span>
-                <div v-if="dailySummaries[getDateKey(d.date)]" class="mt-2 space-y-1">
-                  <div v-if="dailySummaries[getDateKey(d.date)].income > 0" class="h-1 lg:h-4 w-full bg-emerald-500/10 rounded-full flex items-center px-1">
-                     <div class="w-1 h-1 rounded-full bg-emerald-500 lg:mr-1.5"></div>
-                     <span class="text-[8px] font-black text-emerald-600 hidden lg:block uppercase tracking-tighter">+{{ (dailySummaries[getDateKey(d.date)].income/1000).toFixed(0) }}k</span>
+                <div v-if="dailySummaries[getDateKey(d.date)]" class="mt-1 space-y-0.5">
+                  <div v-if="dailySummaries[getDateKey(d.date)].income > 0" class="h-0.5 lg:h-3 w-full bg-emerald-500/10 rounded-full flex items-center px-1">
+                     <div class="w-0.5 h-0.5 rounded-full bg-emerald-500 lg:mr-1"></div>
+                     <span class="text-[7px] font-black text-emerald-600 hidden lg:block uppercase tracking-tighter">+{{ (dailySummaries[getDateKey(d.date)].income/1000).toFixed(0) }}k</span>
                   </div>
-                  <div v-if="dailySummaries[getDateKey(d.date)].expense > 0" class="h-1 lg:h-4 w-full bg-rose-500/10 rounded-full flex items-center px-1">
-                     <div class="w-1 h-1 rounded-full bg-rose-500 lg:mr-1.5"></div>
-                     <span class="text-[8px] font-black text-rose-600 hidden lg:block uppercase tracking-tighter">-{{ (dailySummaries[getDateKey(d.date)].expense/1000).toFixed(0) }}k</span>
+                  <div v-if="dailySummaries[getDateKey(d.date)].expense > 0" class="h-0.5 lg:h-3 w-full bg-rose-500/10 rounded-full flex items-center px-1">
+                     <div class="w-0.5 h-0.5 rounded-full bg-rose-500 lg:mr-1"></div>
+                     <span class="text-[7px] font-black text-rose-600 hidden lg:block uppercase tracking-tighter">-{{ (dailySummaries[getDateKey(d.date)].expense/1000).toFixed(0) }}k</span>
                   </div>
                 </div>
               </div>
@@ -215,94 +265,99 @@
           </AppCard>
         </div>
       </div>
+
+      <!-- Empty Grid Removed -->
+
+      
     </div>
 
     <!-- VIEW: ANALYTICS -->
-    <div v-if="activeTab === 'analytics'" class="space-y-8 animate-slide-up">
-       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <AppCard class="lg:col-span-8">
-            <template #header><h4 class="font-black text-xs uppercase tracking-widest">{{ $t('analytics.cash_flow') }}</h4></template>
-            <CashFlowChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
+    <div v-if="activeTab === 'analytics'" class="space-y-6 animate-slide-up">
+       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <AppCard class="lg:col-span-8 !rounded-3xl shadow-xl shadow-slate-200/50">
+            <template #header><h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('analytics.cash_flow') }}</h4></template>
+            <div class="h-[350px]">
+              <CashFlowChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
+            </div>
           </AppCard>
-          <AppCard class="lg:col-span-4">
-            <template #header><h4 class="font-black text-xs uppercase tracking-widest">{{ $t('analytics.top_spending') }}</h4></template>
+          <AppCard class="lg:col-span-4 !rounded-3xl shadow-xl shadow-slate-200/50">
+            <template #header><h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('analytics.top_spending') }}</h4></template>
             <TopSpendingList :transactions="filteredTransactions" />
           </AppCard>
        </div>
-       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <AppCard>
-            <template #header><h4 class="font-black text-xs uppercase tracking-widest">{{ $t('analytics.category_distribution') }} ({{ $t('dashboard.expense') }})</h4></template>
+       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <AppCard class="!rounded-3xl shadow-xl shadow-slate-200/50">
+            <template #header><h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('analytics.category_distribution') }} ({{ $t('dashboard.expense') }})</h4></template>
             <CategoryDonutChart :transactions="filteredTransactions" type="EXPENSE" :is-dark-mode="isDark" />
           </AppCard>
-          <AppCard>
-            <template #header><h4 class="font-black text-xs uppercase tracking-widest">{{ $t('analytics.category_distribution') }} ({{ $t('dashboard.income') }})</h4></template>
+          <AppCard class="!rounded-3xl shadow-xl shadow-slate-200/50">
+            <template #header><h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('analytics.category_distribution') }} ({{ $t('dashboard.income') }})</h4></template>
             <CategoryDonutChart :transactions="filteredTransactions" type="INCOME" :is-dark-mode="isDark" />
           </AppCard>
-          <AppCard>
-            <template #header><h4 class="font-black text-xs uppercase tracking-widest">{{ $t('analytics.spending_trend') }}</h4></template>
+          <AppCard class="!rounded-3xl shadow-xl shadow-slate-200/50">
+            <template #header><h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('analytics.spending_trend') }}</h4></template>
             <DailySpendingChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
           </AppCard>
        </div>
     </div>
 
     <!-- VIEW: HEALTH -->
-    <div v-if="activeTab === 'health'" class="space-y-10 animate-slide-up pb-10">
-       <!-- Top Highlight: Health Metrics -->
-       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <SavingsRateCard :transactions="filteredTransactions" />
-          <HealthScoreCard :transactions="filteredTransactions" />
+    <div v-if="activeTab === 'health'" class="space-y-6 animate-slide-up pb-10">
+       
+       <!-- Row 1: High-Level Performance Metrics -->
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AppCard class="border-none shadow-xl shadow-slate-200/50 !rounded-3xl">
+            <HealthScoreCard :transactions="filteredTransactions" />
+          </AppCard>
+          <AppCard class="border-none shadow-xl shadow-slate-200/50 !rounded-3xl">
+            <SavingsRateCard :transactions="filteredTransactions" />
+          </AppCard>
        </div>
 
-       <!-- Main Health Content -->
-       <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          <!-- Left: The Foundation (Planning) -->
-          <div class="lg:col-span-5 space-y-6">
-             <div class="flex items-center gap-3 px-2">
-                <div class="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                  <Crown :size="18" />
+        <!-- Row 2: Foundation & Actionable Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Left: Your Financial Position (The Ladder) -->
+          <div class="lg:col-span-4 space-y-4">
+              <div class="flex items-center gap-3 px-2">
+                <div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-sm">
+                  <Crown :size="14" stroke-width="3" />
                 </div>
-                <h4 class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">{{ $t('ladder.title') }}</h4>
-             </div>
-             <FinancialLadder />
+                <h4 class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">{{ $t('ladder.title') }}</h4>
+              </div>
+              <FinancialLadder />
           </div>
 
-          <!-- Right: Action & Projection -->
-          <div class="lg:col-span-7 space-y-10">
-             <!-- Emergency Fund Focus -->
-             <div class="space-y-6">
+          <!-- Right: Safety Net & Growth Trends -->
+          <div class="lg:col-span-8 space-y-6">
+              
+              <!-- Primary Protection: Emergency Fund -->
+              <div class="space-y-3">
                 <div class="flex items-center gap-3 px-2">
-                   <div class="w-8 h-8 rounded-xl bg-primary-500/10 flex items-center justify-center text-primary-600">
-                     <HeartPulse :size="18" />
-                   </div>
-                   <h4 class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">{{ $t('health.emergency_fund') }}</h4>
+                  <div class="w-7 h-7 rounded-lg bg-primary-500/10 flex items-center justify-center text-primary-600 shadow-sm">
+                    <HeartPulse :size="14" stroke-width="3" />
+                  </div>
+                  <h4 class="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">{{ $t('health.emergency_fund') }}</h4>
                 </div>
-                <EmergencyFundCard :transactions="filteredTransactions" />
-             </div>
+                <AppCard class="border-none shadow-xl shadow-slate-200/50 !rounded-3xl">
+                    <EmergencyFundCard :transactions="filteredTransactions" />
+                </AppCard>
+              </div>
 
-             <!-- Projections Grid -->
-             <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                <AppCard class="border-none shadow-xl shadow-slate-200/50">
-                  <template #header>
-                    <div class="flex items-center justify-between w-full">
-                      <h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('health.net_worth') }}</h4>
-                      <BarChart3 :size="14" class="text-slate-300" />
-                    </div>
-                  </template>
+              <!-- Growth & Budget Analysis -->
+              <div class="grid grid-cols-1 gap-6">
+                <!-- Net Worth Trend -->
+                <AppCard class="border-none shadow-xl shadow-slate-200/50 !rounded-3xl">
                   <NetWorthChart :total-balance="totalBalance" :is-dark-mode="isDark" />
                 </AppCard>
-
-                <AppCard class="border-none shadow-xl shadow-slate-200/50">
-                  <template #header>
-                    <div class="flex items-center justify-between w-full">
-                      <h4 class="font-black text-[10px] uppercase tracking-widest text-slate-400">{{ $t('health.budget_actual') }}</h4>
-                      <Sparkles :size="14" class="text-slate-300" />
-                    </div>
-                  </template>
+                
+                <!-- Budget Actual comparison -->
+                <AppCard class="border-none shadow-xl shadow-slate-200/50 !rounded-3xl">
                   <BudgetActualChart :transactions="filteredTransactions" :is-dark-mode="isDark" />
                 </AppCard>
-             </div>
+              </div>
           </div>
-       </div>
+        </div>
     </div>
 
     <!-- MODALS -->
@@ -328,7 +383,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { 
   Plus, 
@@ -341,11 +396,13 @@ import {
   ArrowDownLeft,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   ArrowLeftRight,
   Scan,
   Sparkles,
   Crown,
   Info,
+  TrendingUp,
   BarChart3
 } from 'lucide-vue-next'
 
@@ -409,6 +466,9 @@ const editingTx = ref(null)
 const selectedDate = ref(new Date())
 const currentMonth = ref(new Date())
 
+const customStartDate = ref(new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0])
+const customEndDate = ref(new Date().toISOString().split('T')[0])
+
 const showOnboarding = ref(!authStore.user?.user_metadata?.financial_profile)
 
 const isLoading = computed(() => walletStore.loading || transactionStore.loading || budgetStore.loading)
@@ -430,28 +490,56 @@ onMounted(async () => {
     walletStore.fetchWallets(),
     transactionStore.fetchTransactions(),
     categoryStore.fetchInitialData(),
-    budgetStore.fetchBudgets()
+    budgetStore.fetchBudgets(),
+    debtStore.fetchDebts(),
+    refreshAnalytics()
   ])
+})
+
+const refreshAnalytics = async () => {
+  let start, end
+  const now = new Date()
+  
+  if (selectedRange.value === '7d') {
+    start = new Date(now)
+    start.setDate(start.getDate() - 6)
+    start.setHours(0,0,0,0)
+    end = now
+  } else if (selectedRange.value === '30d') {
+    start = new Date(now)
+    start.setDate(start.getDate() - 29)
+    start.setHours(0,0,0,0)
+    end = now
+  } else if (selectedRange.value === 'year') {
+    start = new Date(now.getFullYear(), 0, 1)
+    start.setHours(0,0,0,0)
+    end = now
+  } else if (selectedRange.value === 'custom') {
+    start = new Date(customStartDate.value)
+    start.setHours(0,0,0,0)
+    end = new Date(customEndDate.value)
+    end.setHours(23, 59, 59, 999)
+  } else {
+    start = new Date(2000, 0, 1)
+    end = now
+  }
+
+  await transactionStore.fetchAnalyticsData({
+    startDate: start.toISOString(),
+    endDate: end.toISOString()
+  })
+}
+
+watch([selectedRange, customStartDate, customEndDate], () => {
+  refreshAnalytics()
 })
 
 const totalBalance = computed(() => walletStore.wallets.reduce((sum, wallet) => sum + Number(wallet.balance), 0))
 
-const filteredTransactions = computed(() => {
-  const now = new Date()
-  const cutoff = new Date(now)
-  if (selectedRange.value === '7d') cutoff.setDate(cutoff.getDate() - 6)
-  else if (selectedRange.value === '30d') cutoff.setDate(cutoff.getDate() - 29)
-  else if (selectedRange.value === 'year') { cutoff.setMonth(0, 1); cutoff.setHours(0,0,0,0) }
-  else cutoff.setFullYear(2000) 
-  
-  return transactionStore.transactions.filter(tx => {
-    const txDate = new Date(tx.created_at)
-    return txDate >= cutoff && txDate <= now
-  })
-})
+const filteredTransactions = computed(() => transactionStore.analyticsTransactions)
 
-const totalIncome = computed(() => filteredTransactions.value.filter(tx => tx.type === 'INCOME').reduce((s, tx) => s + Number(tx.amount), 0))
-const totalExpense = computed(() => filteredTransactions.value.filter(tx => tx.type === 'EXPENSE').reduce((s, tx) => s + Number(tx.amount), 0))
+const totalIncome = computed(() => transactionStore.analyticsTransactions.filter(tx => tx.type === 'INCOME').reduce((s, tx) => s + Number(tx.amount), 0))
+const totalExpense = computed(() => transactionStore.analyticsTransactions.filter(tx => tx.type === 'EXPENSE').reduce((s, tx) => s + Number(tx.amount), 0))
 const recentTransactions = computed(() => [...transactionStore.transactions].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5))
 
 // Calendar Logic

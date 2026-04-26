@@ -92,20 +92,20 @@
     </AppCard>
 
     <!-- Net Worth / Savings -->
-    <AppCard class="relative overflow-hidden group bg-slate-900 dark:bg-gray-800 border-none">
-      <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition-colors"></div>
+    <AppCard class="relative overflow-hidden group">
+      <div class="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl group-hover:bg-indigo-500/10 transition-colors"></div>
       <div class="space-y-4 relative z-10">
         <div class="flex items-center justify-between">
-          <div class="p-2 bg-white/10 rounded-xl text-primary-400">
+          <div class="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl text-indigo-600 dark:text-indigo-400">
             <Activity :size="20" />
           </div>
           <span class="text-[10px] font-black uppercase tracking-widest text-slate-400">{{ $t('dashboard.net_flow') }}</span>
         </div>
         <div>
-          <h3 class="text-2xl font-black text-white tabular-nums tracking-tighter">
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tabular-nums tracking-tighter">
              {{ formatIDR(totalIncome - totalExpense) }}
           </h3>
-          <p class="text-[10px] font-bold text-primary-400 uppercase mt-1 italic">{{ $t('dashboard.monthly_surplus') }}</p>
+          <p class="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase mt-1 italic">{{ $t('dashboard.monthly_surplus') }}</p>
         </div>
       </div>
     </AppCard>

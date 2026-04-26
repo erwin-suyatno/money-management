@@ -83,19 +83,20 @@ const chartOptions = computed(() => ({
     toolbar: { show: false },
     fontFamily: 'inherit',
     background: 'transparent',
-    animations: { enabled: true }
+    zoom: { enabled: false },
+    animations: { enabled: true, easing: 'easeinout', speed: 800 }
   },
-  colors: ['#f43f5e', '#e2e8f0'], // Actual vs Budget
+  colors: ['#b91c1c', '#475569'], // Pure Red vs Slate
   plotOptions: {
     bar: {
       horizontal: true,
-      borderRadius: 4,
+      borderRadius: 0, // Solid square bars
       dataLabels: { position: 'top' },
-      barHeight: '70%'
+      barHeight: '75%'
     }
   },
   dataLabels: { enabled: false },
-  stroke: { show: true, width: 1, colors: ['#fff'] },
+  stroke: { show: true, width: 2, colors: ['transparent'] },
   xaxis: {
     categories: chartData.value.labels,
     labels: {
@@ -103,19 +104,19 @@ const chartOptions = computed(() => ({
         if (val === 0) return '0'
         return val >= 1000000 ? `${(val/1000000).toFixed(1)}M` : `${(val/1000).toFixed(0)}k`
       },
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '10px' }
+      style: { colors: props.isDarkMode ? '#cbd5e1' : '#1e293b', fontWeight: 900, fontSize: '10px' }
     },
-    axisBorder: { show: false },
+    axisBorder: { show: true, color: props.isDarkMode ? '#475569' : '#cbd5e1', strokeWidth: 2 },
     axisTicks: { show: false }
   },
   yaxis: {
     labels: {
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '11px' }
+      style: { colors: props.isDarkMode ? '#cbd5e1' : '#1e293b', fontWeight: 900, fontSize: '11px' }
     }
   },
   grid: {
-    borderColor: props.isDarkMode ? '#374151' : '#e2e8f0',
-    strokeDashArray: 4,
+    borderColor: props.isDarkMode ? '#334155' : '#e2e8f0',
+    strokeDashArray: 0,
     yaxis: { lines: { show: true } },
     padding: { top: 0, right: 0, bottom: 0, left: 10 }
   },
@@ -123,10 +124,12 @@ const chartOptions = computed(() => ({
     show: true, 
     position: 'top', 
     horizontalAlign: 'right',
-    labels: { colors: props.isDarkMode ? '#94a3b8' : '#334155' }
+    offsetY: -20,
+    labels: { colors: props.isDarkMode ? '#f1f5f9' : '#0f172a', fontWeight: 900 }
   },
   theme: { mode: props.isDarkMode ? 'dark' : 'light' },
   tooltip: {
+    enabled: true,
     theme: props.isDarkMode ? 'dark' : 'light',
     y: {
       formatter: (val) => `Rp ${val.toLocaleString()}`

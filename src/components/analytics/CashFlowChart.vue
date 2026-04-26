@@ -43,10 +43,25 @@ const chartData = computed(() => {
 
   const grouped = {}
   
-  // Group by date (YYYY-MM-DD)
+  // Calculate range to determine grouping
+  const dates = props.transactions.map(tx => new Date(tx.created_at))
+  const minDate = new Date(Math.min(...dates))
+  const maxDate = new Date(Math.max(...dates))
+  const diffDays = (maxDate - minDate) / (1000 * 60 * 60 * 24)
+  
+  const useMonthly = diffDays > 90
+
   props.transactions.forEach(tx => {
     const d = new Date(tx.created_at)
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    let dateStr
+    if (useMonthly) {
+      // Group by month: YYYY-MM
+      dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`
+    } else {
+      // Group by date: YYYY-MM-DD
+      dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    }
+
     if (!grouped[dateStr]) {
       grouped[dateStr] = { income: 0, expense: 0 }
     }
@@ -63,7 +78,8 @@ const chartData = computed(() => {
   return {
     dates: sortedDates,
     income: sortedDates.map(d => grouped[d].income),
-    expense: sortedDates.map(d => grouped[d].expense)
+    expense: sortedDates.map(d => grouped[d].expense),
+    isMonthly: useMonthly
   }
 })
 
@@ -81,22 +97,30 @@ const chartOptions = computed(() => ({
     zoom: { enabled: false },
     animations: { enabled: true, easing: 'easeinout', speed: 800 }
   },
-  colors: ['#10b981', '#f43f5e'], // Emerald, Rose
+  colors: ['#10b981', '#f43f5e'], // Emerald 500, Rose 500
   fill: {
     type: 'gradient',
-    gradient: { shadeIntensity: 1, opacityFrom: 0.3, opacityTo: 0.05, stops: [0, 90, 100] }
+    gradient: {
+      shadeIntensity: 1,
+      opacityFrom: 0.45,
+      opacityTo: 0.05,
+      stops: [0, 100]
+    }
   },
   dataLabels: { enabled: false },
-  stroke: { curve: 'smooth', width: 3 },
+  stroke: { curve: 'smooth', width: 3, lineCap: 'round' },
   xaxis: {
     categories: chartData.value.dates,
     labels: {
       formatter: (val) => {
         if (!val) return ''
         const date = new Date(val)
+        if (chartData.value.isMonthly) {
+          return date.toLocaleDateString(undefined, { month: 'short', year: '2-digit' })
+        }
         return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
       },
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '10px' }
+      style: { colors: props.isDarkMode ? '#64748b' : '#94a3b8', fontWeight: 700, fontSize: '9px' }
     },
     axisBorder: { show: false },
     axisTicks: { show: false },
@@ -108,29 +132,46 @@ const chartOptions = computed(() => ({
         if (val === 0) return '0'
         return val >= 1000000 ? `${(val/1000000).toFixed(1)}M` : `${(val/1000).toFixed(0)}k`
       },
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '10px' }
+      style: { colors: props.isDarkMode ? '#64748b' : '#94a3b8', fontWeight: 700, fontSize: '9px' }
     }
   },
   grid: {
-    borderColor: props.isDarkMode ? '#374151' : '#e2e8f0',
+    borderColor: props.isDarkMode ? 'rgba(51, 65, 85, 0.5)' : 'rgba(226, 232, 240, 0.5)',
     strokeDashArray: 4,
     yaxis: { lines: { show: true } },
     xaxis: { lines: { show: false } },
-    padding: { top: 0, right: 0, bottom: 0, left: 10 }
+    padding: { top: 10, right: 10, bottom: 0, left: 10 }
   },
   legend: { 
     show: true, 
     position: 'top', 
     horizontalAlign: 'right',
-    offsetY: -20,
-    labels: { colors: props.isDarkMode ? '#94a3b8' : '#334155' },
-    markers: { radius: 12 }
+    offsetY: -30,
+    labels: { colors: props.isDarkMode ? '#f1f5f9' : '#0f172a', fontWeight: 800, fontSize: '10px' },
+    markers: { radius: 12, width: 8, height: 8, offsetX: -4 }
   },
   theme: { mode: props.isDarkMode ? 'dark' : 'light' },
   tooltip: {
+    enabled: true,
     theme: props.isDarkMode ? 'dark' : 'light',
-    y: {
-      formatter: (val) => `Rp ${val.toLocaleString()}`
+    shared: true,
+    intersect: false,
+    custom: function({ series, seriesIndex, dataPointIndex, w }) {
+      const income = series[0][dataPointIndex];
+      const expense = series[1][dataPointIndex];
+      return `<div class="px-4 py-3 bg-white dark:bg-gray-900 shadow-2xl rounded-2xl border-none">
+        <div class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2">${w.globals.labels[dataPointIndex]}</div>
+        <div class="flex items-center gap-6">
+          <div>
+            <p class="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">Income</p>
+            <p class="text-sm font-black text-slate-900 dark:text-white">Rp ${income.toLocaleString()}</p>
+          </div>
+          <div>
+            <p class="text-[8px] font-black text-rose-500 uppercase tracking-tighter">Expense</p>
+            <p class="text-sm font-black text-slate-900 dark:text-white">Rp ${expense.toLocaleString()}</p>
+          </div>
+        </div>
+      </div>`;
     }
   }
 }))

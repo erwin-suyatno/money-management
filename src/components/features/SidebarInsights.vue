@@ -15,10 +15,10 @@ const router = useRouter()
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="flex flex-col gap-4 h-full">
     <!-- Main Insights Card -->
-    <div class="bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 p-5 rounded-3xl shadow-sm">
-      <div class="flex items-center justify-between mb-5 px-1">
+    <div class="flex-1 bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 p-5 rounded-3xl shadow-sm flex flex-col">
+      <div class="flex items-center justify-between mb-4 px-1 shrink-0">
         <h4 class="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-[0.2em] flex items-center gap-2">
           <Crown :size="12" class="text-amber-500" />
           {{ $t('ladder.title') }}
@@ -31,12 +31,12 @@ const router = useRouter()
       </div>
 
       <!-- Compact Financial Ladder -->
-      <div class="px-1 scale-95 origin-top">
-        <FinancialLadder compact />
+      <div class="px-1 flex-1 flex flex-col">
+        <FinancialLadder compact class="flex-1" />
       </div>
       
       <!-- Progress Mini -->
-      <div class="mt-4 pt-4 border-t border-slate-50 dark:border-gray-800/50">
+      <!-- <div class="mt-4 pt-4 border-t border-slate-50 dark:border-gray-800/50">
         <div 
           class="flex items-center justify-between group cursor-pointer"
           @click="router.push('/emergency-fund')"
@@ -51,11 +51,11 @@ const router = useRouter()
           </div>
           <ChevronRight :size="14" class="text-slate-300 ml-3 group-hover:text-primary-500 transition-colors" />
         </div>
-      </div>
+      </div> -->
     </div>
 
     <!-- Quick Actions Compact -->
-    <div class="grid grid-cols-2 gap-3">
+    <!-- <div class="grid grid-cols-2 gap-3">
       <button 
         @click="router.push('/transfer')"
         class="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl bg-white dark:bg-gray-900 border border-slate-100 dark:border-gray-800 hover:border-primary-500/50 hover:shadow-lg hover:shadow-primary-500/5 transition-all group"
@@ -75,7 +75,7 @@ const router = useRouter()
         </div>
         <span class="text-[9px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">{{ $t('actions.scan') }}</span>
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 

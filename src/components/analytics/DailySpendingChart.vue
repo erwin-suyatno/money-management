@@ -60,13 +60,14 @@ const chartOptions = computed(() => ({
     toolbar: { show: false },
     fontFamily: 'inherit',
     background: 'transparent',
-    animations: { enabled: true }
+    zoom: { enabled: false },
+    animations: { enabled: true, easing: 'easeinout', speed: 800 }
   },
-  colors: ['#f43f5e'], // Rose
+  colors: ['#b91c1c'], // Pure Red
   plotOptions: {
     bar: {
-      borderRadius: 6,
-      columnWidth: '50%',
+      borderRadius: 0, // Solid square bars
+      columnWidth: '70%',
       distributed: true
     }
   },
@@ -74,9 +75,9 @@ const chartOptions = computed(() => ({
   xaxis: {
     categories: chartData.value.labels,
     labels: {
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '10px' }
+      style: { colors: props.isDarkMode ? '#cbd5e1' : '#1e293b', fontWeight: 900, fontSize: '10px' }
     },
-    axisBorder: { show: false },
+    axisBorder: { show: true, color: props.isDarkMode ? '#475569' : '#cbd5e1', strokeWidth: 2 },
     axisTicks: { show: false }
   },
   yaxis: {
@@ -85,18 +86,19 @@ const chartOptions = computed(() => ({
         if (val === 0) return '0'
         return val >= 1000000 ? `${(val/1000000).toFixed(1)}M` : `${(val/1000).toFixed(0)}k`
       },
-      style: { colors: props.isDarkMode ? '#94a3b8' : '#334155', fontWeight: 600, fontSize: '10px' }
+      style: { colors: props.isDarkMode ? '#cbd5e1' : '#1e293b', fontWeight: 900, fontSize: '10px' }
     }
   },
   grid: {
-    borderColor: props.isDarkMode ? '#374151' : '#e2e8f0',
-    strokeDashArray: 4,
+    borderColor: props.isDarkMode ? '#334155' : '#e2e8f0',
+    strokeDashArray: 0,
     yaxis: { lines: { show: true } },
     padding: { top: 0, right: 0, bottom: 0, left: 10 }
   },
   legend: { show: false },
   theme: { mode: props.isDarkMode ? 'dark' : 'light' },
   tooltip: {
+    enabled: true,
     theme: props.isDarkMode ? 'dark' : 'light',
     y: {
       formatter: (val) => `Rp ${val.toLocaleString()}`

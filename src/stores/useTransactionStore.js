@@ -6,6 +6,7 @@ import { useWalletStore } from './useWalletStore'
 export const useTransactionStore = defineStore('transaction', {
   state: () => ({
     transactions: [],
+    analyticsTransactions: [], // Data for charts/analytics
     loading: false,
     error: null,
     hasMore: true,
@@ -70,6 +71,48 @@ export const useTransactionStore = defineStore('transaction', {
       // but we can update it based on the count returned for the current query
       this.hasMore = this.transactions.length < this.totalCount
       
+      this.loading = false
+      return true
+    },
+    
+    async fetchAnalyticsData({ startDate = null, endDate = null } = {}) {
+      this.loading = true
+      this.error = null
+
+      const authStore = useAuthStore()
+      if (!authStore.activeWorkspaceId) {
+        this.analyticsTransactions = []
+        this.loading = false
+        return
+      }
+
+      let query = supabase
+        .from('transactions')
+        .select(`
+          id,
+          amount,
+          type,
+          created_at,
+          category_id,
+          categories (
+            name,
+            color
+          )
+        `)
+        .eq('workspace_id', authStore.activeWorkspaceId)
+
+      if (startDate) query = query.gte('created_at', startDate)
+      if (endDate) query = query.lte('created_at', endDate)
+
+      const { data, error } = await query.order('created_at', { ascending: true })
+
+      if (error) {
+        this.error = error.message
+        this.loading = false
+        return false
+      }
+
+      this.analyticsTransactions = data || []
       this.loading = false
       return true
     },

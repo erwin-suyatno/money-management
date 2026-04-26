@@ -34,13 +34,13 @@
   --color-info: #0ea5e9;
   --color-info-subtle: #e0f2fe;
 
-  /* Spacing */
+  /* Spacing - Optimized for efficiency */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
-  --space-2xl: 3rem;
+  --space-md: 0.75rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2.25rem;
 
   /* Radius - More rounded for modern look */
   --radius-sm: 0.5rem;

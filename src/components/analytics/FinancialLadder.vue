@@ -1,18 +1,22 @@
 <template>
-  <div :class="compact ? 'space-y-2' : 'space-y-4'">
+  <div :class="[compact ? 'flex flex-col justify-between h-full py-1' : 'space-y-4']" class="relative">
+    <!-- Background Connector Line (Dynamic) -->
+    <div 
+      v-if="compact"
+      class="absolute left-[26px] top-6 bottom-6 w-0.5 bg-slate-100 dark:bg-gray-800 -z-0"
+    ></div>
+
     <div 
       v-for="level in levels" 
       :key="level.id"
       class="relative group"
+      :class="{ 'flex-1 flex flex-col justify-center': compact }"
     >
-      <!-- Connector Line -->
+      <!-- Connector Line (Non-compact only) -->
       <div 
-        v-if="level.id !== 5"
-        class="absolute left-6 top-12 w-0.5"
-        :class="[
-          compact ? 'h-6 left-4 top-8' : 'h-16 left-6 top-12',
-          level.isCompleted && levels[level.id].isCompleted ? 'bg-primary-500' : 'bg-slate-100 dark:bg-gray-800'
-        ]"
+        v-if="!compact && level.id !== 5"
+        class="absolute left-6 top-12 w-0.5 h-16 bg-slate-100 dark:bg-gray-800"
+        :class="{ 'bg-primary-500': level.isCompleted && levels[level.id].isCompleted }"
       ></div>
 
       <AppCard 
@@ -63,17 +67,23 @@
                  {{ $t('ladder.achieved') }}
                </span>
             </div>
-            <p v-if="!compact" class="text-xs text-slate-500 dark:text-gray-400 font-medium leading-relaxed">
-              {{ level.description }}
-            </p>
-            
-            <!-- Requirement Tooltip-like info -->
-            <div v-if="!compact" class="mt-3 flex items-center gap-2">
-               <div class="w-1.5 h-1.5 rounded-full" :class="level.isCompleted ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-gray-700'"></div>
-               <span class="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider">
-                 {{ $t('ladder.requirement') }}: {{ level.requirement }}
-               </span>
-            </div>
+             <p 
+               class="text-slate-500 dark:text-gray-400 font-medium leading-relaxed"
+               :class="compact ? 'text-[8px] line-clamp-1 mt-0.5' : 'text-xs mt-1'"
+             >
+               {{ level.description }}
+             </p>
+             
+             <!-- Requirement -->
+             <div class="flex items-center gap-1.5" :class="compact ? 'mt-1' : 'mt-3'">
+                <div class="rounded-full" :class="[compact ? 'w-1 h-1' : 'w-1.5 h-1.5', level.isCompleted ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-gray-700']"></div>
+                <span 
+                  class="font-bold text-slate-400 dark:text-gray-500 uppercase tracking-wider"
+                  :class="compact ? 'text-[7px]' : 'text-[10px]'"
+                >
+                  {{ $t('ladder.requirement') }}: {{ level.requirement }}
+                </span>
+             </div>
           </div>
 
           <!-- Arrow indicator for Active -->
