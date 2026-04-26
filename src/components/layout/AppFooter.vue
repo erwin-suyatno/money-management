@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-const version = '2.1.0'
+const version = '2.1.1'
 const year = new Date().getFullYear()
 </script>
 

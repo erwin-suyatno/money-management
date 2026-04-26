@@ -11,7 +11,7 @@
       <div class="text-center mb-10 md:mb-16 animate-slide-up">
         <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] mb-4">
            <Zap :size="14" class="fill-current" />
-           {{ $t('news.latest_version') }} v2.1.0
+           {{ $t('news.latest_version') }} v2.1.1
         </div>
         <h1 class="text-3xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white mb-4 italic">
           {{ $t('news.title') }}
@@ -101,6 +101,20 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const updates = computed(() => [
+  {
+    title: t('news.stability_title'),
+    date: '26 April 2026',
+    icon: Zap,
+    tags: ['Security', 'Fix'],
+    colorClass: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20',
+    description: t('news.stability_desc'),
+    highlights: [
+      t('news.stability_highlight_1'),
+      t('news.stability_highlight_2'),
+      t('news.stability_highlight_3'),
+      t('news.stability_highlight_4')
+    ]
+  },
   {
     title: t('news.dashboard_grid_title'),
     date: '26 April 2026',

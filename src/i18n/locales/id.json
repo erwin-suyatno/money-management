@@ -484,7 +484,13 @@
     "dashboard_grid_highlight_1": "Sinkronisasi Tinggi Sidebar",
     "dashboard_grid_highlight_2": "Tangga Finansial Dinamis",
     "dashboard_grid_highlight_3": "Optimasi Jarak & Gap",
-    "dashboard_grid_highlight_4": "Peningkatan Kepadatan Info"
+    "dashboard_grid_highlight_4": "Peningkatan Kepadatan Info",
+    "stability_title": "Peningkatan Stabilitas & Isolasi Workspace",
+    "stability_desc": "Kami melakukan perbaikan besar pada arsitektur data untuk memastikan keamanan dan isolasi yang ketat di seluruh workspace Anda.",
+    "stability_highlight_1": "Isolasi Workspace Ketat",
+    "stability_highlight_2": "Perbaikan Bug Transfer",
+    "stability_highlight_3": "Migrasi Data Otomatis",
+    "stability_highlight_4": "Perbaikan Error Supabase"
   },
   "guard": {
     "investment_guard": "Perisai Investasi",

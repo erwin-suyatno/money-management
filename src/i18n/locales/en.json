@@ -484,7 +484,13 @@
     "dashboard_grid_highlight_1": "Synchronized Sidebar Height",
     "dashboard_grid_highlight_2": "Stretched Financial Ladder",
     "dashboard_grid_highlight_3": "Optimized Spacing & Gaps",
-    "dashboard_grid_highlight_4": "Enhanced Info Density"
+    "dashboard_grid_highlight_4": "Enhanced Info Density",
+    "stability_title": "Stability Improvements & Workspace Isolation",
+    "stability_desc": "We have implemented major improvements to the data architecture to ensure strict security and isolation across all your workspaces.",
+    "stability_highlight_1": "Strict Workspace Isolation",
+    "stability_highlight_2": "Transfer Bug Fixes",
+    "stability_highlight_3": "Automated Data Migration",
+    "stability_highlight_4": "Supabase Connection Fixes"
   },
   "guard": {
     "investment_guard": "Investment Guard",
